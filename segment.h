@@ -9,11 +9,16 @@
 
 class segment {
 private:
-    sommet s1;
-    sommet s2;
-    double length;
+    sommet s1_;
+    sommet s2_;
+    double length_;
 public:
-    segment(sommet s1, sommet s2);
+    segment(const sommet &a, const sommet &b);
+    double length();
+    sommet begin();
+    sommet end();
+
+    segment operator=(const segment &s);
 };
 
 
