@@ -25,3 +25,15 @@ sommet sommet::operator*=(const double &scalar) {
     y *= scalar;
     return *this;
 }
+
+sommet sommet::operator=(const sommet &s1) {
+    x = s1.x;
+    y = s1.y;
+    return *this;
+}
+
+sommet::sommet(double coor_x, double coor_y) {
+    x = coor_x;
+    y = coor_y;
+    return *this;
+}

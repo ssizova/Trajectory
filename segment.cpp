@@ -3,3 +3,8 @@
 //
 
 #include "segment.h"
+
+segment::segment(sommet s1, sommet s2) {
+
+
+}
