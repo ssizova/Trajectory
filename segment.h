@@ -15,13 +15,14 @@ private:
     double length_;
 
 public:
+    segment() = default;
+    segment(const segment &s);
     segment(const sommet &a, const sommet &b);
-    double length();
-    sommet begin();
-    sommet end();
+    double length() const;
+    const sommet &begin() const;
+    const sommet &end() const;
     segment &operator=(const segment &s);
-
 };
-
+bool intersection(const segment &s1, const segment &s2);
 
 #endif //TRAJECTORY_SEGMENT_H
