@@ -1,42 +1,36 @@
 #include "dijkstra.h"
 
-double  no_graph::cost(id_t beg, id_t end) const {
-  assert((beg < n_) && (end < n_));
-  if   (end == beg) { return 0.; }
-  id_t i, j;
-  if   (end  < beg) { i = end; j = beg; }
-  else              { i = beg; j = end; }
-  return costs_[((2*n_ - i - 1)*i)/2 + j - i - 1]; 
-}
-double& no_graph::cost(id_t beg, id_t end) {
-  assert((beg < n_) && (end < n_));
-  assert(beg != end);
-  id_t i, j;
-  if   (end  < beg) { i = end; j = beg; }
-  else              { i = beg; j = end; }
-  return costs_[((2*n_ - i - 1)*i)/2 + j - i - 1]; 
-}
-
-list<id_t> dijkstra(id_t s, id_t t, no_graph const& g) {
+list<id_t> dijkstra(const id_t s, const id_t t, no_graph const& g) {
   auto n = g.num_vertices();
   vector<double> path_l(n, inf);
   path_l.shrink_to_fit();
   path_l[s] = 0.;
   vector<id_t> path_p;
   path_p.reserve(n);
-  list<id_t> unvisited;
+  forward_list<id_t> unvisited;
   for (id_t i = 0; i < n; i++) {
-    unvisited.push_back(i);
-  } // list contains 0, 1, 2, ..., n-1
+    unvisited.emplace_back(i);
+  } // list of unvisited vertices
   id_t curr = s;
   while (curr != t) {
-    auto iter = min_element(unvisited.begin(), unvisited.end(),
-                [&](id_t i1, id_t i2)->bool {
-                  return path_l[i1] < path_l[i2];                    
-                }); // find where we 
-    curr = *iter;
-    unvisited.erase(iter);
-    for (auto next : unvisited) {
+    if (unvisited.empty())
+    auto it_min  = unvisited.begin();
+    auto it_last = unvisited.end();
+    auto it_prev = it_min;
+    auto it_curr = it_prev;
+    ++it_curr;
+    auto it_before_min = unvisited.before_begin();
+    while (it_curr != it_last) {
+      if (path_l[*it_curr] < path_l[*it_min]) {
+        it_min        = it_curr;
+        it_before_min = it_prev;
+      }
+      ++it_prev;
+      ++it_curr;
+    }
+    curr = *it_min;
+    unvisited.erase_after(it_before_min);
+    for (const auto next : unvisited) {
       double way = path_l[curr] + g.cost(curr, next);
       if (way < path_l[next]) {
         path_p[next] = curr;
