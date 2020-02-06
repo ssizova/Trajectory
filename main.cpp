@@ -1,13 +1,21 @@
-//
-// Created by Sizov on 24.01.2020.
-//
 #include <iostream>
-#include "sommet.h"
-int main(){
-    std::cout<<"rf";
-    sommet x1(1.0, 2.0);
-    sommet x2(1.3, 2.5);
-    std::cout<< det()
+#include "segment.h"
+
+double det(sommet s1, sommet s2) {
+    return s1.x() * s2.y() - s1.y() * s2.x();
+}
+
+int main() {
+    sommet x1(0.0, 0.0);
+    sommet x2(2.0, 2.0);
+    sommet x4(2, 0);
+    sommet x3(0, 2);
+    segment s1(x1, x2);
+    segment s2(x3, x4);
+    sommet x = x1 + x2;
+    std::cout<< intersection(s1,s2);
+
+    return 0;
 
 
 }
