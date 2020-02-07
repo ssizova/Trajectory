@@ -1,5 +1,7 @@
 #pragma once
 #include "includes.h"
+#include "sommet.h"
+#include "obstacle"
 using namespace std;
 
 int

@@ -1,7 +1,7 @@
 #include "no_graph.h"
 
 //const double inf = numeric_limits<double>::infinity();
-
+const double inf = std::numeric_limits<double>::infinity();
 //Full graph
 
 full_no_graph::full_no_graph(id_t n) 

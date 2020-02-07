@@ -9,14 +9,13 @@ list<id_t> dijkstra(const id_t s, const id_t t, no_graph const& g) {
   path_p.reserve(n);
   forward_list<id_t> unvisited;
   for (id_t i = 0; i < n; i++) {
-    unvisited.emplace_back(i);
+    unvisited.emplace_front(i);
   } // list of unvisited vertices
   id_t curr = s;
   while (curr != t) {
-    if (unvisited.empty())
     auto it_min  = unvisited.begin();
     auto it_last = unvisited.end();
-    auto it_prev = it_min;
+    auto it_prev = unvisited.begin();
     auto it_curr = it_prev;
     ++it_curr;
     auto it_before_min = unvisited.before_begin();
