@@ -1,8 +1,10 @@
 #include "no_graph.h"
 
+//const double inf = numeric_limits<double>::infinity();
+
 //Full graph
 
-explicit full_no_graph::full_no_graph(id_t n) 
+full_no_graph::full_no_graph(id_t n) 
 : costs_(n*(n-1)/2, inf) {
   n_ = n;
 }
@@ -23,11 +25,9 @@ double& full_no_graph::cost(id_t beg, id_t end) {
   return costs_[((2*n_ - i - 1)*i)/2 + j - i - 1]; 
 }
 
-
-
 //Sparse graph
 
-explicit spar_no_graph::spar_no_graph(id_t n)
+spar_no_graph::spar_no_graph(id_t n)
 : arcs_(30) {
   n_ = n;
   arcs_.max_load_factor(0.3);
