@@ -6,10 +6,10 @@ double det(sommet s1, sommet s2) {
 }
 
 int main() {
-    sommet x1(0.0, 0.0);
-    sommet x2(2.0, 2.0);
-    sommet x4(2, 0);
-    sommet x3(0, 2);
+    sommet x3(0.0, 1.0);
+    sommet x4(0.0, 0.0);
+    sommet x1(0, 0);
+    sommet x2(5, 0);
     segment s1(x1, x2);
     segment s2(x3, x4);
     sommet x = x1 + x2;

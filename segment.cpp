@@ -36,7 +36,10 @@ bool intersection(const segment &segment1, const segment &segment2) {
     double alpha2 = det(segment2.end() - segment2.begin(), segment1.end() - segment2.begin());
     double alpha3 = det(segment1.end() - segment1.begin(), segment2.begin() - segment1.begin());
     double alpha4 = det(segment1.end() - segment1.begin(), segment2.end() - segment1.begin());
-    return ((alpha1 * alpha2 < 0) && (alpha3 * alpha4 < 0));
+
+
+    return (((alpha1 * alpha2 < 0) && (alpha3 * alpha4 < 0) )||(alpha1*alpha2 ==0 && alpha3*alpha4!=0)||
+            (alpha3*alpha4 ==0 && alpha1*alpha2!=0));
 }
 
 
