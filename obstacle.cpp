@@ -1,17 +1,17 @@
 #include "obstacle.h"
 
 segment obstacle::segments(id_t i) const {
-	return segment{ i, (i + 1)%vertices.size() };
+    auto n = vertices.size();
+    assert((0 <= i) && (i < n));
+	return segment{vertices[i], vertices[(i + 1)%n]};
 }
 
-
-
-bool obstacle::contains_inside(sommet const& p) {
+bool obstacle::contains_inside(sommet const& p) const {
   int counter = 0; // the  winding number counter
   auto n = vertices.size();
   for (int i = 0; i < n; i++) {
-    sommet beg = vertices[i];
-    sommet end = vertices[(i + 1) % n];
+    sommet const& beg = vertices[i];
+    sommet const& end = vertices[(i + 1) % n];
     if (beg.y() <= p.y()) { 
       if ((end.y() >  p.y()) && (det(end - beg, p - beg) > 0))  // p left of  edge
         ++counter; // have  a valid up intersect
@@ -22,5 +22,4 @@ bool obstacle::contains_inside(sommet const& p) {
     }
   }
   return counter!=0;
-}
 }
