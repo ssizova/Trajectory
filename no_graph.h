@@ -3,15 +3,17 @@
 using namespace std;
 
 struct no_graph {
-  inline id_t num_vertices() const { return n_; }
+  inline size_t num_vertices() const {
+    return n_;
+  }
   virtual double  cost(id_t, id_t) const = 0;
   virtual double& cost(id_t, id_t) = 0;
 protected:
-  id_t n_;
+  size_t n_;
 };
 
 struct full_no_graph : no_graph {
-  explicit full_no_graph(id_t);
+  explicit full_no_graph(size_t);
   virtual double  cost(id_t, id_t) const override;
   virtual double& cost(id_t, id_t) override;
 private:
@@ -19,7 +21,7 @@ private:
 };
 
 struct spar_no_graph : no_graph {
-  explicit spar_no_graph(id_t);
+  explicit spar_no_graph(size_t);
   virtual double  cost(id_t, id_t) const override;
   virtual double& cost(id_t, id_t) override;
 private:
