@@ -1,7 +1,5 @@
 #pragma once
-#include "includes.h"
 #include "segment.h"
-
 using namespace std;
 
 struct obstacle {
