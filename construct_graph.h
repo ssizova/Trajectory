@@ -5,7 +5,7 @@ using namespace std;
 
 int
 construct_graph(
-	full_no_graph* g,
+	no_graph * g,
 	sommet const& start,
 	sommet const& finish,
 	vector<obstacle> const& obstacles
