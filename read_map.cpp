@@ -1,25 +1,22 @@
 #include "read_map.h"
 
-const double inf = std::numeric_limits<double>::infinity();
-
-const string comment = "#";
+const char comment = '#';
 
 namespace {
-bool section_find(ifstream & in, string const& sectname, string const& filename) {
+bool section_find(istream & in, const string& sectname, const filesystem::path& filename) {
   string line;
 
-  while (getline(in, line) && (line.find(sectname) != 0));
-  while (getline(in, line) && (line.at(0) == comment   ));
+  while (getline(in, line) && line.find(sectname) != 0);
   if (in.eof()) {
-    cerr << "EOF while looking for " << sectname << " section in " << filename
-         << endl;
+    cerr << "EOF while looking for " << sectname << " section" << endl;
     return false;
   }
+  cout << line << endl;
   return true;
 }
 bool out_of_numeric_limits(id_t x) {
   if (x >= numeric_limits<id_t>::max()) {
-      cerr << "Format id_t is too small to handle " << endl;
+      cerr << "Format id_t is too small to handle" << endl;
       return true;
     }
   return false;
@@ -28,10 +25,10 @@ bool out_of_numeric_limits(id_t x) {
 
 int
 read_map(
-          string const& filename,
-          point * start,
-          point * finish,
-          vector<obstacle> * obstacles
+         const filesystem::path& filename,
+         sommet * start,
+         sommet * finish,
+         vector<obstacle> * obstacles
         )
 {
   //Create input stream
@@ -39,31 +36,31 @@ read_map(
 
   //Check file consistency
   if (!conf.good()) {
-    cerr << "Cannot open map file " << filename << endl;
+    cerr << "Cannot open map file" << endl;
     return -1;
   }
   
   double x, y, r;
 
   //Parse $Start section
-  if (!section_find(conf, "[&Start]", filename)) return -1;
-  conf >> x >> y >> r;
-  *start = point{x,y};
+  if (!section_find(conf, "[$Start]", filename)) return -1;
+  conf >> x >> y;
+  *start = sommet{x,y};
   
   //Parse $Finish section
-  if (!section_find(conf, "[&Finish]", filename)) return -1;
+  if (!section_find(conf, "[$Finish]", filename)) return -1;
   conf >> x >> y;
-  *finish = point{x,y};
+  *finish = sommet{x,y};
   
   //Parse $Obstacles section
-  if (!section_find(conf, "[&Obstacles]", filename)) return -1;
+  if (!section_find(conf, "[$NumObstacles]", filename)) return -1;
   id_t num_obstacles;
   conf >> num_obstacles;
   if (out_of_numeric_limits(num_obstacles)) return -1;
   obstacles->reserve(num_obstacles);
   
   // Parse $Nodes section
-  if (!section_find(conf, "[&Nodes]", filename)) return -1;
+  if (!section_find(conf, "[$Nodes]", filename)) return -1;
   for (id_t i = 0; i < num_obstacles; i++) {
     obstacles->emplace_back(obstacle{});
     auto& curr = (*obstacles)[i];
@@ -77,8 +74,9 @@ read_map(
     curr.vertices.reserve(num_nodes_i);
     for (id_t j = 0; j < num_nodes_i; j++) {
       conf >> x >> y;
-      curr.vertices.emplace_back(point{x,y});
+      curr.vertices.emplace_back(sommet{x,y});
     }
   }
+  conf.close();
   return 0;
 }
