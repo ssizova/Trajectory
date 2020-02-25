@@ -1,30 +1,23 @@
 #include "config.h"
-#include "read_map.h"
-#include "dijkstra.h"
-#include "construct_graph.h"
+#include "optimal_path.h"
 using namespace std;
 
-int main(int argc, config::value_type** argv) {
-	config::file_name(argv[0]);
+int main(int argc, char** argv) {
+	cout << "Searching for IO files . . ." << endl;
+	io_file_manager(argc, argv);
 
+	cout << "Parsing a map . . ." << endl;
 	sommet start;
 	sommet finish;
 	vector<obstacle> 	obstacles;
+	parse_map(input_path(), &start, &finish, &obstacles);
 
-	int flag_reading = read_map(config::input_file(), &start, &finish, &obstacles);
-	cout << flag_reading << endl << endl;
+	cout << "Applying Dijkstra algorithm . . ." << endl;
+	auto path = optimal_path(start, finish, obstacles);
 
-	size_t n = 2;
-	for (const auto& curr : obstacles)
-		n += curr.vertices.size();
-	spar_no_graph G{ n };
+	cout << "Writing data to output file . . ." << endl;
+	write_ptrs(path);
 
-	int flag_construction = construct_graph(&G, start, finish, obstacles);
-	cout << flag_construction << endl << endl;
-
-	auto path = dijkstra(0, 1, G);
-
-	config::output(path);
-
+	cout << "Success. See chosen output file for the result!" << endl;
 	return 0;
 }
