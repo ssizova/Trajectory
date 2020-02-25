@@ -12,7 +12,7 @@ protected:
   size_t n_;
 };
 
-struct full_no_graph : no_graph {
+struct full_no_graph final : no_graph {
   explicit full_no_graph(size_t);
   virtual double  cost(id_t, id_t) const override;
   virtual double& cost(id_t, id_t) override;
@@ -20,7 +20,7 @@ private:
   vector<double> costs_;
 };
 
-struct spar_no_graph : no_graph {
+struct spar_no_graph final : no_graph {
   explicit spar_no_graph(size_t);
   virtual double  cost(id_t, id_t) const override;
   virtual double& cost(id_t, id_t) override;
