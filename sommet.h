@@ -8,23 +8,24 @@ private:
 
 public:
   sommet() = default;
-  sommet(const sommet&);
-  sommet(double, double);
+  sommet(const sommet&) noexcept;
+  sommet(double, double) noexcept;
 
-  double x() const;
-  double y() const;
+  double x() const noexcept;
+  double y() const noexcept;
 
-  void swap(sommet&);
-  sommet& operator= (const sommet&);
-  sommet& operator+=(const sommet&);
-  sommet& operator-=(const sommet&);
-  sommet& operator*=(double);
+  void swap(sommet&) noexcept;
+  sommet& operator= (const sommet&) noexcept;
+  sommet& operator+=(const sommet&) noexcept;
+  sommet& operator-=(const sommet&) noexcept;
+  sommet& operator*=(double) noexcept;
 };
 
-bool operator==(const sommet&, const sommet&);
-bool operator!=(const sommet&, const sommet&);
-sommet operator+(sommet, const sommet&);
-sommet operator-(sommet, const sommet&);
-sommet operator*(double, sommet);
-sommet operator*(sommet, double);
-double det(const sommet&, const sommet&);
+bool operator==(const sommet&, const sommet&) noexcept;
+bool operator!=(const sommet&, const sommet&) noexcept;
+sommet operator+(sommet, const sommet&) noexcept;
+sommet operator-(sommet, const sommet&) noexcept;
+sommet operator*(double, sommet) noexcept;
+sommet operator*(sommet, double) noexcept;
+double det(const sommet&, const sommet&) noexcept;
+double prod(const sommet&, const sommet&) noexcept;
