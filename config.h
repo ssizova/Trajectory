@@ -27,7 +27,7 @@ write_ptrs(const ptrs_holder& cont) {
 	out << endl;
 	out << "[$OptPath]" << endl;
 	for (const auto& elem : cont) {
-		out << elem->x() << ' ' << elem->y() << endl;
+		out << elem.x() << ' ' << elem.y() << endl;
 	}
 	out.close();
 }

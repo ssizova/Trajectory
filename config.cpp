@@ -70,7 +70,6 @@ parse_map(
   double x, y, r;
 
   //Parse $Start section
-
   if (!section_find(conf, "[$Start]", filepath)) return -1;
   conf >> x >> y >> r;
   *start = sommet{ x,y };
@@ -104,7 +103,7 @@ parse_map(
 
     // this lambda not only checks whether segments of construction are parallel
     // but also parses to the obstacle object as many nodes of a construction as needed
-    auto segments_are_parallel = [&](vector<sommet> * const vertices,
+    auto segments_analyzer = [&](vector<sommet> * const vertices,
       sommet * const prev,
       sommet * const curr,
       const sommet & next) {
@@ -164,14 +163,16 @@ parse_map(
     sommet second = curr; // memorize them in special variables
                           // we will get back to them later
 
+    auto reading_segment = bind(segments_analyzer, vertices_of_i, &prev, &curr, placeholders::_1);
+
     for (id_t j = 3; j <= num_nodes_i; j++) {
       conf >> x >> y;
       sommet next{ x,y }; // read next vertex
-      segments_are_parallel(vertices_of_i, &prev, &curr, next);
+      reading_segment(next);
     }
     // but there are still two missing constructions to consider
-    segments_are_parallel(vertices_of_i, &prev, &curr, first);
-    if (segments_are_parallel(vertices_of_i, &prev, &curr, second))
+    reading_segment(first);
+    if (reading_segment(second))
     // the last segment is parallel to the first one
       (*vertices_of_i)[0] = prev;
     // all the nodes of this obstacle processed

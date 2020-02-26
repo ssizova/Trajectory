@@ -1,15 +1,15 @@
 #include "dijkstra.h"
 
-list<id_t> dijkstra(const id_t s, const id_t t, const no_graph& g) {
+list<size_t> dijkstra(const size_t s, const size_t t, const no_graph& g) {
   auto n = g.num_vertices();
   vector<double> path_l(n, inf);
   path_l[s] = 0.;
-  vector<id_t> path_p(n);
-  forward_list<id_t> unvisited;
-  for (id_t i = 0; i < n; i++) {
+  vector<size_t> path_p(n);
+  forward_list<size_t> unvisited;
+  for (auto i = 0; i < n; i++) {
     unvisited.emplace_front(i);
   } // list of unvisited vertices
-  id_t curr = s;
+  auto curr = s;
   while (curr != t) {
     auto it_before_min = unvisited.before_begin();
     auto it_min  = unvisited.begin();
@@ -35,7 +35,7 @@ list<id_t> dijkstra(const id_t s, const id_t t, const no_graph& g) {
       }
     }
   }
-  list<id_t> path(1, curr);
+  list<size_t> path(1, curr);
   while (curr != s) {
     curr = path_p[curr];
     path.push_front(curr);

@@ -4,6 +4,6 @@ using namespace std;
 
 struct obstacle {
 	vector<sommet> vertices;
-	segment segments(id_t) const;
+	segment segments(size_t) const;
 	bool contains_inside(sommet const&) const;
 };
