@@ -12,4 +12,4 @@ add_executable(Trajectory main.cpp sommet.cpp segment.cpp no_graph.cpp dijkstra.
 #target_link_libraries(runTests ${GTEST_LIBRARIES} pthread)
 #
 ##add_executable(Trajectory main.cpp sommet.cpp segment.cpp arc.cpp graphe.cpp dijkstra.cpp)
-#add_executable(Trajectory main.cpp sommet.cpp segment.cpp arc.cpp graphe.cpp dijkstra.cpp)
+#add_executable(Trajectory main.cpp sommet.cpp segment.cpp obstacle.cpp dijkstra.cpp construct_graph.cpp)

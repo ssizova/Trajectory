@@ -20,7 +20,7 @@ double& full_no_graph::cost(id_t beg, id_t end) {
   assert((beg < n_) && (end < n_));
   assert(beg != end);
   id_t i, j;
-  if   (end  < beg) { i = end; j = beg; }
+  if   (end < beg) { i = end; j = beg; }
   else              { i = beg; j = end; }
   return costs_[((2*n_ - i - 1)*i)/2 + j - i - 1]; 
 }
@@ -28,7 +28,7 @@ double& full_no_graph::cost(id_t beg, id_t end) {
 //Sparse graph
 
 spar_no_graph::spar_no_graph(id_t n)
-: arcs_(30) {
+: arcs_(37) {
   n_ = n;
   arcs_.max_load_factor(0.3);
 }
@@ -48,7 +48,7 @@ double  spar_no_graph::cost(id_t beg, id_t end) const {
   if (beg == end) return 0.;
   auto it = arcs_.find(arc{beg, end});
   if (it == arcs_.end())
-    return inf; 
+    return inf;
   else
     return it->second;
 }
