@@ -3,34 +3,36 @@
 using namespace std;
 
 struct no_graph {
-  inline id_t num_vertices() const { return n_; }
-  virtual double  cost(id_t, id_t) const = 0;
-  virtual double& cost(id_t, id_t) = 0;
+  inline size_t num_vertices() const {
+    return n_;
+  }
+  virtual double  cost(size_t, size_t) const = 0;
+  virtual double& cost(size_t, size_t) = 0;
 protected:
-  id_t n_;
+  size_t n_ = 0;
 };
 
-struct full_no_graph : no_graph {
-  explicit full_no_graph(id_t);
-  virtual double  cost(id_t, id_t) const override;
-  virtual double& cost(id_t, id_t) override;
+struct full_no_graph final : no_graph {
+  explicit full_no_graph(size_t);
+  virtual double  cost(size_t, size_t) const override;
+  virtual double& cost(size_t, size_t) override;
 private:
   vector<double> costs_;
 };
 
-struct spar_no_graph : no_graph {
-  explicit spar_no_graph(id_t);
-  virtual double  cost(id_t, id_t) const override;
-  virtual double& cost(id_t, id_t) override;
+struct spar_no_graph final : no_graph {
+  explicit spar_no_graph(size_t);
+  virtual double  cost(size_t, size_t) const override;
+  virtual double& cost(size_t, size_t) override;
 private:
   struct arc {
-    id_t beg, end;
+    size_t beg, end;
   };
   struct arc_hasher {
-    size_t operator()(arc const&) const noexcept;
+    size_t operator()(const arc&) const noexcept;
   };
   struct arc_equal_to {
-    bool operator()(arc const&, arc const&) const noexcept;
+    bool operator()(const arc&, const arc&) const noexcept;
   };
   unordered_map<arc,double,arc_hasher,arc_equal_to> arcs_;
 };
