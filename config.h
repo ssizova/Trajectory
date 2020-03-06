@@ -42,3 +42,5 @@ int parse_map(
 	sommet* const finish,
 	vector<obstacle>* const obstacles
 );
+
+void write_obstacles(vector<obstacle> const&);

@@ -5,15 +5,17 @@ namespace {
     string line;
     while (getline(in, line) && line.find(sectname) != 0);
     if (in.eof()) {
-      cerr << "EOF while looking for " << sectname << " section" << endl;
-      return false;
+      ostringstream msg;
+      msg << "EOF while looking for " << sectname << " section" << endl;
+      throw runtime_error(msg.str());
     }
     return true;
   }
   bool out_of_numeric_limits(id_t x) {
     if (x >= numeric_limits<id_t>::max()) {
-      cerr << "Format id_t is too small to handle" << endl;
-      return true;
+      ostringstream msg;
+      msg << "Format id_t is too small to handle" << endl;
+      throw runtime_error(msg.str());
     }
     return false;
   }
@@ -63,8 +65,9 @@ parse_map(
 
   //Check file consistency
   if (!conf.good()) {
-    cerr << "Cannot open map file" << endl;
-    return -1;
+    ostringstream msg;
+    msg << "Cannot open map file" << endl;
+    throw runtime_error(msg.str());
   }
 
   double x, y, r;
@@ -95,8 +98,9 @@ parse_map(
     conf >> num_nodes_i;
     if (out_of_numeric_limits(num_nodes_i)) return -1;
     if (num_nodes_i < 3) {
-      cerr << "Invalid number of nodes in obstacle " << i << endl;
-      return -1;
+      ostringstream msg;
+      msg << "Invalid number of nodes in obstacle " << i << endl;
+      throw runtime_error(msg.str());
     }
 
     // here we introduce a simple algorithm how to parse a graph
@@ -107,8 +111,6 @@ parse_map(
       sommet * const prev,
       sommet * const curr,
       const sommet & next) {
-      bool res = true;
-
       auto n1 = segment{ *prev, *curr }.outer_normal();
       auto n2 = segment{ *curr,  next }.outer_normal();
 
@@ -118,7 +120,6 @@ parse_map(
       if (abs(sin_phi) >= tol) {
         // ok, segments are not parallel, thus, its intersection
         // is significant
-        res = false;
         // we consider 2 cases
         if (sin_phi < 0.) {
           // polygon obstacle_i is concave in vertex curr
@@ -138,12 +139,12 @@ parse_map(
             vertices->emplace_back(*curr);
           else {
             constexpr double arc_0 = 1e-2; // relative length to consider
-            int num_parts = (int)(r*sin_phi/arc_0) + 1;
-            for (int k = 0; k <= num_parts; k++) {
-              double sin_phi_k = k * sin_phi / num_parts;
-              double cos_phi_k = sqrt(1. - sin_phi_k * sin_phi_k);
-              sommet outer_angle_shift = r * sommet{ cos_phi_k * n1.x() - sin_phi_k * n1.y(),
-                                                     sin_phi_k * n1.x() + cos_phi_k * n1.y() };
+            auto phi = acos(prod(n1, n2));
+            int num_parts = (int)(r*phi/arc_0) + 1;
+            for (auto k = 0; k <= num_parts; k++) {
+              double phi_k = k * phi/num_parts;
+              sommet outer_angle_shift = r * sommet{ cos(phi_k) * n1.x() - sin(phi_k) * n1.y(),
+                                                     sin(phi_k) * n1.x() + cos(phi_k) * n1.y() };
               vertices->emplace_back(*curr + outer_angle_shift);
             }
           }
@@ -151,11 +152,10 @@ parse_map(
         *prev = *curr; 
       }
       *curr = next; // we do a step forward in our cycle
-      return res;
     };
 
     conf >> x >> y;
-    sommet prev{ x,y };  // read firse vertex
+    sommet prev{ x,y };  // read first vertex
     conf >> x >> y;
     sommet curr{ x,y };  // read second vertex
 
@@ -165,18 +165,29 @@ parse_map(
 
     auto reading_segment = bind(segments_analyzer, vertices_of_i, &prev, &curr, placeholders::_1);
 
-    for (id_t j = 3; j <= num_nodes_i; j++) {
+    for (auto j = 3; j <= num_nodes_i; j++) {
       conf >> x >> y;
       sommet next{ x,y }; // read next vertex
       reading_segment(next);
     }
     // but there are still two missing constructions to consider
     reading_segment(first);
-    if (reading_segment(second))
-    // the last segment is parallel to the first one
-      (*vertices_of_i)[0] = prev;
+    reading_segment(second);
     // all the nodes of this obstacle processed
   } // all obstacles processed
   conf.close();
   return 0;
+}
+
+void write_obstacles(vector<obstacle> const& obstacles) {
+    ofstream out("obstacles.txt");
+    out << "[$NumObstacles]" << endl;
+    out << obstacles.size();
+    out << "[$PtsObstacles]" << endl;
+    for (auto const& obstacle : obstacles) {
+        out << obstacle.vertices.size() << endl;
+        for (auto const& vertex : obstacle.vertices)
+            out << vertex.x() << " " << vertex.y() << endl;
+    }
+    out.close();
 }

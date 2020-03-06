@@ -18,20 +18,27 @@ optimal_path(
 
 	auto correct_segment = [&](const segment& s) {
 		for (const auto& curr : obstacles) {
+			bool is_segment_of_curr = false;
 			auto num_vertices_of_curr = curr.vertices.size();
-			for (id_t k = 0; k < num_vertices_of_curr; k++) {
+			for (auto k = 0; k < num_vertices_of_curr; k++) {
 				const auto& other_s = curr.segments(k);
 				if (s == other_s) {
+					is_segment_of_curr = true;
 					constexpr double eps = 1e-10;
+					// to avoid approving of segments which lie fully inside its obstacle (case of
+					// self-intersections in the obstacle etc.)
 					sommet adjusted_mid = 0.5 * (s.begin() + s.end()) + eps * other_s.outer_normal();
-					return !curr.contains_inside(adjusted_mid);
+					if (curr.contains_inside(adjusted_mid))
+						return false;
 				}
 				if (intersection(s, other_s))
 					return false;
 			}
-			sommet mid = 0.5 * (s.begin() + s.end());
-			if (curr.contains_inside(mid))
-				return false;
+			if (!is_segment_of_curr) {
+				sommet mid = 0.5 * (s.begin() + s.end());
+				if (curr.contains_inside(mid))
+					return false;
+			}
 		}
 		return true;
 	};
@@ -53,8 +60,9 @@ optimal_path(
 			auto n = all_vertices.size();
 			for (auto i = 0; i < n; i++) {
 				s = segment{ all_vertices[i], next_vertex };
-				if (correct_segment(s))
+				if (correct_segment(s)) {
 					g.cost(i, n) = s.length();
+				}
 			}
 			all_vertices.emplace_back(next_vertex);
 		}

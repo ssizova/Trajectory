@@ -9,14 +9,11 @@ full_no_graph::full_no_graph(size_t n)
   n_ = n;
 }
 double  full_no_graph::cost(size_t i, size_t j) const {
-  assert((i < n_) && (j < n_));
   if (i == j) { return 0.; }
   if (i > j) std::swap(i, j);
   return costs_[((2*n_ - i - 1)*i)/2 + j - i - 1];
 }
 double& full_no_graph::cost(size_t i, size_t j) {
-  assert((i < n_) && (j < n_));
-  assert(i != j);
   if (i > j) std::swap(i, j);
   return costs_[((2*n_ - i - 1)*i)/2 + j - i - 1];
 }
@@ -39,7 +36,6 @@ bool spar_no_graph::arc_equal_to::operator()
   return (a1.beg == a2.beg) && (a1.end == a2.end);
 }
 double  spar_no_graph::cost(size_t i, size_t j) const {
-  assert((i < n_) && (j < n_));
   if (i == j) return 0.;
   if (i > j) std::swap(i, j);
   auto it = arcs_.find(arc{i, j});
@@ -49,8 +45,6 @@ double  spar_no_graph::cost(size_t i, size_t j) const {
     return it->second;
 }
 double& spar_no_graph::cost(size_t i, size_t j) {
-  assert((i < n_) && (j < n_));
-  assert(i != j);
   if (i > j) std::swap(i, j);
   return arcs_[arc{i, j}];
 }
