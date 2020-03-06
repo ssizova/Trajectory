@@ -1,42 +1,43 @@
-//
-// Created by Sizov on 24.01.2020.
-//
-
 #include "segment.h"
-#include <math.h>
-#include <iostream>
 
-segment::segment(const sommet &a, const sommet &b) : s1_(a), s2_(b),
-                                                     length_(sqrt((s1_.x() - s2_.x()) * (s1_.x() - s2_.x()) +
-                                                                  (s1_.y() - s2_.y()) * (s1_.y() - s2_.y()))) {}
+segment::segment(const sommet& beg, const sommet& end) noexcept
+: beg_(beg)
+, end_(end)
+, length_(sqrt((beg_.x() - end_.x()) * (beg_.x() - end_.x()) +
+               (beg_.y() - end_.y()) * (beg_.y() - end_.y()))) 
+{}
 
-double segment::length() const {
-    return length_;
+const sommet& segment::begin() const noexcept{
+  return beg_;
+}
+const sommet& segment::end() const noexcept{
+  return end_;
+}
+double segment::length() const noexcept {
+  return length_;
+}
+sommet segment::outer_normal() const noexcept {
+  return sommet{ end_.y() - beg_.y(), beg_.x() - end_.x() } * (1./length());
 }
 
-const sommet &segment::begin() const {
-    return s1_;
+void segment::swap(segment& s) noexcept {
+  beg_.swap(s.beg_);
+  end_.swap(s.end_);
 }
 
-const sommet &segment::end() const {
-    return s2_;
+bool operator==(const segment& s1, const segment& s2) noexcept {
+  return ((s1.begin() == s2.begin()) && (s1.end() == s2.end())) ||
+    ((s1.begin() == s2.end()) && (s1.end() == s2.begin()));
 }
-
-segment &segment::operator=(const segment &s) {
-    s1_ = s.s1_;
-    s2_ = s.s2_;
-    length_ = s.length_;
-    return *this;
+bool operator!=(const segment& s1, const segment& s2) noexcept {
+  return !(s1 == s2);
 }
-
-segment::segment(const segment &s) : s1_(s.s1_), s2_(s.s2_), length_(s.length_) {}
-
-bool intersection(const segment &segment1, const segment &segment2) {
-    double alpha1 = det(segment2.end() - segment2.begin(), segment1.begin() - segment2.begin());
-    double alpha2 = det(segment2.end() - segment2.begin(), segment1.end() - segment2.begin());
-    double alpha3 = det(segment1.end() - segment1.begin(), segment2.begin() - segment1.begin());
-    double alpha4 = det(segment1.end() - segment1.begin(), segment2.end() - segment1.begin());
-    return ((alpha1 * alpha2 < 0) && (alpha3 * alpha4 < 0));
+bool intersection(const segment &s1, const segment &s2) noexcept {
+  double alpha1 = det(s2.end() - s2.begin(), s1.begin() - s2.begin());
+  double alpha2 = det(s2.end() - s2.begin(), s1.end()   - s2.begin());
+  double alpha3 = det(s1.end() - s1.begin(), s2.begin() - s1.begin());
+  double alpha4 = det(s1.end() - s1.begin(), s2.end()   - s1.begin());
+  return ((alpha1 * alpha2 < 0) && (alpha3 * alpha4 < 0));
 }
 
 

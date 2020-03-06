@@ -1,21 +1,23 @@
-#include <iostream>
-#include "segment.h"
+#include "config.h"
+#include "optimal_path.h"
+using namespace std;
 
-double det(sommet s1, sommet s2) {
-    return s1.x() * s2.y() - s1.y() * s2.x();
-}
+int main(int argc, char** argv) {
+	cout << "Searching for IO files . . ." << endl;
+	io_file_manager(argc, argv);
 
-int main() {
-    sommet x1(0.0, 0.0);
-    sommet x2(2.0, 2.0);
-    sommet x4(2, 0);
-    sommet x3(0, 2);
-    segment s1(x1, x2);
-    segment s2(x3, x4);
-    sommet x = x1 + x2;
-    std::cout<< intersection(s1,s2);
+	cout << "Parsing a map . . ." << endl;
+	sommet start;
+	sommet finish;
+	vector<obstacle> 	obstacles;
+	parse_map(input_path(), &start, &finish, &obstacles);
 
-    return 0;
+	cout << "Applying Dijkstra algorithm . . ." << endl;
+	auto path = optimal_path(start, finish, obstacles);
 
+	cout << "Writing data to output file . . ." << endl;
+	write_ptrs(path);
 
+	cout << "Success. See chosen output file for the result!" << endl;
+	return 0;
 }
