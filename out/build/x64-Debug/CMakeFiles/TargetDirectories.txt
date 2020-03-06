@@ -1,3 +1,0 @@
-C:/Users/Nastya/Documents/GitHub/Trajectory/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-C:/Users/Nastya/Documents/GitHub/Trajectory/out/build/x64-Debug/CMakeFiles/Trajectory.dir
-C:/Users/Nastya/Documents/GitHub/Trajectory/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
