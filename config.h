@@ -2,7 +2,6 @@
 #include "obstacle.h"
 #include "includes.h"
 using namespace std;
-//using filesystem = std::experimental::filesystem;
 
 namespace {
 	template<typename T>
@@ -19,9 +18,11 @@ namespace {
 	};
 }
 
-namespace fs = std::experimental::filesystem;
-
-
+#ifdef _WIN32
+	namespace fs = std::experimental::filesystem;
+#else
+	namespace fs = std::filesystem;
+#endif
 
 int io_file_manager(int, char**);
 fs::path& input_path();
