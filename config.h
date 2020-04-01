@@ -19,9 +19,9 @@ namespace {
 }
 
 #ifdef _WIN32
-	namespace fs = std::experimental::filesystem;
-#else
 	namespace fs = std::filesystem;
+#else
+	namespace fs = std::experimental::filesystem;
 #endif
 
 int io_file_manager(int, char**);
