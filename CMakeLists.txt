@@ -6,7 +6,7 @@ add_executable(Trajectory main.cpp sommet.cpp segment.cpp obstacle.cpp dijkstra.
 
 
 ##for gtest
-add_subdirectory(googletest)
+add_subdirectory(gtest)
 include_directories(.)
 include_directories(test)
 add_executable(runTests test/tests.cpp)
