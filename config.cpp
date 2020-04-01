@@ -71,30 +71,30 @@ parse_map(
   double x, y, r;
 
   //Parse $Start section
-  if (!section_find(conf, "[$Start]")) return -1;
+  if (section_find(conf, "[$Start]"));
   conf >> x >> y >> r;
   *start = sommet{ x,y };
 
   //Parse $Finish section
-  if (!section_find(conf, "[$Finish]")) return -1;
+  if (section_find(conf, "[$Finish]"));
   conf >> x >> y;
   *finish = sommet{ x,y };
 
   //Parse $Obstacles section
-  if (!section_find(conf, "[$NumObstacles]")) return -1;
+  if (section_find(conf, "[$NumObstacles]"));
   id_t num_obstacles;
   conf >> num_obstacles;
-  if (out_of_numeric_limits(num_obstacles)) return -1;
+  if (out_of_numeric_limits(num_obstacles));
   obstacles->reserve(num_obstacles);
 
   // Parse $Nodes section
-  if (!section_find(conf, "[$PtsObstacles]")) return -1;
+  if (section_find(conf, "[$PtsObstacles]"));
   for (id_t i = 0; i < num_obstacles; i++) {
     obstacles->emplace_back(obstacle{});
     auto* const vertices_of_i = &((*obstacles)[i].vertices);
     id_t num_nodes_i;
     conf >> num_nodes_i;
-    if (out_of_numeric_limits(num_nodes_i)) return -1;
+    if (out_of_numeric_limits(num_nodes_i));
     if (num_nodes_i < 3) {
       ostringstream msg;
       msg << "Invalid number of nodes in obstacle " << i << endl;
