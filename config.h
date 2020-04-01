@@ -18,12 +18,6 @@ namespace {
 	};
 }
 
-#ifdef _WIN32
-	namespace fs = std::filesystem;
-#else
-	namespace fs = std::experimental::filesystem;
-#endif
-
 int io_file_manager(int, char**);
 fs::path& input_path();
 fs::path& output_path();
