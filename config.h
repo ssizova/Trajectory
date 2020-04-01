@@ -1,4 +1,6 @@
+#include <cstddef>
 #include "obstacle.h"
+#include "includes.h"
 using namespace std;
 
 namespace {
@@ -16,8 +18,17 @@ namespace {
 	};
 }
 
-namespace fs = filesystem;
+void io_file_manager(int, char**);
+fs::path& input_path();
+fs::path& output_path();
 
+void parse_map(
+	sommet* const start,
+	sommet* const finish,
+	vector<obstacle>* const obstacles
+);
+
+void write_obstacles(vector<obstacle> const&);
 template<typename ptrs_holder>
 inline
 typename enable_if<has_begin_end<ptrs_holder>::value>::type
@@ -31,16 +42,3 @@ write_ptrs(const ptrs_holder& cont) {
 	}
 	out.close();
 }
-
-int io_file_manager(int, char**);
-fs::path& input_path();
-fs::path& output_path();
-
-int parse_map(
-	const fs::path& filename,
-	sommet* const start,
-	sommet* const finish,
-	vector<obstacle>* const obstacles
-);
-
-void write_obstacles(vector<obstacle> const&);

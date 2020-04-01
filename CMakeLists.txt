@@ -3,7 +3,7 @@ project(Trajectory)
 set(CMAKE_CXX_STANDARD 17)
 set ( CMAKE_C_FLAGS "lstdc++fs")
 add_executable(Trajectory main.cpp sommet.cpp segment.cpp obstacle.cpp dijkstra.cpp optimal_path.cpp config.cpp no_graph.cpp)
-#add_executable(Trajectory main.cpp sommet.cpp segment.cpp no_graph.cpp dijkstra.cpp )
+
 
 ##for gtest
 add_subdirectory(googletest)
