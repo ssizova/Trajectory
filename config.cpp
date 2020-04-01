@@ -21,7 +21,7 @@ namespace {
   }
 }
 
-int io_file_manager(int argc, char** argv) {
+void io_file_manager(int argc, char** argv) {
   if (--argc > 0)
     input_path() = argv[1];
   else {
@@ -41,7 +41,6 @@ int io_file_manager(int argc, char** argv) {
   if (--argc > 0) {
     cerr << "WARNING too many arguments : last arguments in input ignored" << endl;
   }
-  return 0;
 }
 fs::path& input_path() {
   static fs::path res{};
@@ -52,7 +51,7 @@ fs::path& output_path() {
   return res;
 }
 
-int
+void
 parse_map(
   sommet* const start,
   sommet* const finish,

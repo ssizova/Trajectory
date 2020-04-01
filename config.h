@@ -18,12 +18,11 @@ namespace {
 	};
 }
 
-int io_file_manager(int, char**);
+void io_file_manager(int, char**);
 fs::path& input_path();
 fs::path& output_path();
 
-int parse_map(
-	const fs::path& filename,
+void parse_map(
 	sommet* const start,
 	sommet* const finish,
 	vector<obstacle>* const obstacles
