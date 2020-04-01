@@ -7,6 +7,7 @@
 #include <fcntl.h>
 
 //#include "../dijkstra.h"
+//Les unit-tests
 
 class sommetTest : public ::testing::Test {
 public:
@@ -83,12 +84,19 @@ TEST(segment, intersection) {
 
     const sommet point2_hl(-5, 0);
     const segment line2h(point2_hl, point1_hr);
-    EXPECT_EQ(intersection(line2h, line1v), true);
+    EXPECT_EQ(intersection(line2h, line1v),true);
 
     const sommet point2_vl(0, -5);
     const segment line2v(point2_vl, point1_vr);
     EXPECT_EQ(intersection(line2h, line2v), true);
     EXPECT_EQ(intersection(segment(point1_hl, point1_hr), segment(point1_hl, point1_hr)), false);
+    EXPECT_EQ(intersection(segment(point1_hl, point1_hr), segment(point1_hr, sommet(10,0))), false);
+
+
+    EXPECT_EQ(intersection(line2h, segment(sommet(-5,2), sommet(5,2))), false);
+
+    EXPECT_EQ(intersection(segment(sommet(-5,0), sommet(5,0)), segment(sommet(1,2), sommet(0,4))), false);
+    EXPECT_EQ(intersection(segment(sommet(-5,0), sommet(5,0)), segment(sommet(1,2), sommet(1,2))), false);
 }
 
 TEST(obstacle, segments) {
@@ -111,12 +119,12 @@ TEST(obstacle, constains_inside) {
     o1.vertices.push_back(sommet(3, 1));
     o1.vertices.push_back(sommet(3, 3));
     o1.vertices.push_back(sommet(1, 3));
-    sommet out(4,1);
-    sommet in(2,2);
-    sommet bord(2,1);
+    sommet out(4, 1);
+    sommet in(2, 2);
+    sommet bord(2, 1);
     EXPECT_EQ(o1.contains_inside(out), false);
     EXPECT_EQ(o1.contains_inside(in), true);
-    EXPECT_EQ(o1.contains_inside(bord), false);
+    EXPECT_EQ(o1.contains_inside(bord), true);
 }
 
 int main(int argc, char **argv) {
