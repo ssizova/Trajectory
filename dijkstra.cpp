@@ -4,9 +4,9 @@ list<size_t> dijkstra(const size_t s, const size_t t, const no_graph& g) {
   auto n = g.num_vertices();
   vector<double> path_l(n, inf);
   path_l[s] = 0.;
-  vector<size_t> path_p(n, inf);
+  vector<size_t> path_p(n, SIZE_MAX);
   forward_list<size_t> unvisited;
-  for (auto i = 0; i < n; ++i) {
+  for (auto i = 0; i < n; i++) {
     unvisited.emplace_front(i);
   } // list of unvisited vertices
   auto curr = s;
@@ -27,7 +27,7 @@ list<size_t> dijkstra(const size_t s, const size_t t, const no_graph& g) {
     }
     curr = *it_min;
     unvisited.erase_after(it_before_min);
-    for (const auto& next : unvisited) {
+    for (const auto next : unvisited) {
       double way = path_l[curr] + g.cost(curr, next);
       if (way < path_l[next]) {
         path_p[next] = curr;

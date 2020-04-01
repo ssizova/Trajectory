@@ -4,9 +4,15 @@
 #include <iostream>
 #include <iomanip>
 
-#include <filesystem>
+#ifdef _WIN32
+  #include <filesystem>
+#else
+  #include <experimental/filesystem>
+#endif
+
 #include <fstream>
 #include <sstream>
+
 #include <string>
 #include <vector>
 #include <list>
