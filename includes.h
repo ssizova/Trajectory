@@ -4,8 +4,8 @@
 #include <iostream>
 #include <iomanip>
 
-#ifdef _WIN32
-  #include <filesystem>
+#else
+  #include <experimental/filesystem>
   namespace fs = std::filesystem;
 #else
   #include <experimental/filesystem>
