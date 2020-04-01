@@ -174,7 +174,6 @@ parse_map(
     // all the nodes of this obstacle processed
   } // all obstacles processed
   conf.close();
-  return 0;
 }
 
 void write_obstacles(vector<obstacle> const& obstacles) {
