@@ -1,7 +1,7 @@
 #include "config.h"
 
 namespace {
-  bool section_find(ifstream& in, const string& sectname, const fs::path& filename) {
+  bool section_find(ifstream& in, const string& sectname) {
     string line;
     while (getline(in, line) && line.find(sectname) != 0);
     if (in.eof()) {
@@ -54,14 +54,13 @@ fs::path& output_path() {
 
 int
 parse_map(
-  const fs::path& filepath,
   sommet* const start,
   sommet* const finish,
   vector<obstacle>* const obstacles
 ) {
   //  Create input stream, constructor (5) from here:
   //  https://en.cppreference.com/w/cpp/io/basic_ifstream/basic_ifstream
-  ifstream conf(filepath);
+  ifstream conf(input_path());
 
   //Check file consistency
   if (!conf.good()) {
@@ -73,24 +72,24 @@ parse_map(
   double x, y, r;
 
   //Parse $Start section
-  if (!section_find(conf, "[$Start]", filepath)) return -1;
+  if (!section_find(conf, "[$Start]")) return -1;
   conf >> x >> y >> r;
   *start = sommet{ x,y };
 
   //Parse $Finish section
-  if (!section_find(conf, "[$Finish]", filepath)) return -1;
+  if (!section_find(conf, "[$Finish]")) return -1;
   conf >> x >> y;
   *finish = sommet{ x,y };
 
   //Parse $Obstacles section
-  if (!section_find(conf, "[$NumObstacles]", filepath)) return -1;
+  if (!section_find(conf, "[$NumObstacles]")) return -1;
   id_t num_obstacles;
   conf >> num_obstacles;
   if (out_of_numeric_limits(num_obstacles)) return -1;
   obstacles->reserve(num_obstacles);
 
   // Parse $Nodes section
-  if (!section_find(conf, "[$PtsObstacles]", filepath)) return -1;
+  if (!section_find(conf, "[$PtsObstacles]")) return -1;
   for (id_t i = 0; i < num_obstacles; i++) {
     obstacles->emplace_back(obstacle{});
     auto* const vertices_of_i = &((*obstacles)[i].vertices);

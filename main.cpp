@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
 		sommet start;
 		sommet finish;
 		vector<obstacle> 	obstacles;
-		parse_map(input_path(), &start, &finish, &obstacles);
+		parse_map(&start, &finish, &obstacles);
 
 		cout << "Applying Dijkstra algorithm . . ." << endl;
 		auto path = optimal_path(start, finish, obstacles);
