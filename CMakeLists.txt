@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 3.12)
 project(Trajectory)
 set(CMAKE_CXX_STANDARD 17)
-
-add_executable(Trajectory main.cpp sommet.cpp segment.cpp no_graph.cpp dijkstra.cpp )
+set ( CMAKE_C_FLAGS "lstdc++fs")
+add_executable(Trajectory main.cpp sommet.cpp segment.cpp obstacle.cpp dijkstra.cpp optimal_path.cpp config.cpp no_graph.cpp)
+#add_executable(Trajectory main.cpp sommet.cpp segment.cpp no_graph.cpp dijkstra.cpp )
 
 ##for gtest
-#include_directories(.)
-#find_package(GTest REQUIRED)
-#include_directories(test)
-#add_executable(runTests test/tests.cpp)
-#target_link_libraries(runTests ${GTEST_LIBRARIES} pthread)
-#
-##add_executable(Trajectory main.cpp sommet.cpp segment.cpp arc.cpp graphe.cpp dijkstra.cpp)
-#add_executable(Trajectory main.cpp sommet.cpp segment.cpp obstacle.cpp dijkstra.cpp construct_graph.cpp)
+add_subdirectory(googletest)
+include_directories(.)
+include_directories(test)
+add_executable(runTests test/tests.cpp)
+target_link_libraries(runTests ${GTEST_LIBRARIES} pthread)
+
