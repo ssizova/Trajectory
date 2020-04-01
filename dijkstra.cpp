@@ -1,5 +1,6 @@
 #include "dijkstra.h"
 
+
 list<size_t> dijkstra(const size_t s, const size_t t, const no_graph& g) {
   auto n = g.num_vertices();
   vector<double> path_l(n, inf);

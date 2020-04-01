@@ -1,5 +1,8 @@
+#include <cstddef>
 #include "obstacle.h"
+#include "includes.h"
 using namespace std;
+//using filesystem = std::experimental::filesystem;
 
 namespace {
 	template<typename T>
@@ -16,21 +19,9 @@ namespace {
 	};
 }
 
-namespace fs = filesystem;
+namespace fs = std::experimental::filesystem;
 
-template<typename ptrs_holder>
-inline
-typename enable_if<has_begin_end<ptrs_holder>::value>::type
-write_ptrs(const ptrs_holder& cont) {
-	fs::copy_file(input_path(), output_path(), fs::copy_options::overwrite_existing);
-	ofstream out(output_path(), ios::app);
-	out << endl;
-	out << "[$OptPath]" << endl;
-	for (const auto& elem : cont) {
-		out << elem.x() << ' ' << elem.y() << endl;
-	}
-	out.close();
-}
+
 
 int io_file_manager(int, char**);
 fs::path& input_path();
@@ -44,3 +35,16 @@ int parse_map(
 );
 
 void write_obstacles(vector<obstacle> const&);
+template<typename ptrs_holder>
+inline
+typename enable_if<has_begin_end<ptrs_holder>::value>::type
+write_ptrs(const ptrs_holder& cont) {
+	fs::copy_file(input_path(), output_path(), fs::copy_options::overwrite_existing);
+	ofstream out(output_path(), ios::app);
+	out << endl;
+	out << "[$OptPath]" << endl;
+	for (const auto& elem : cont) {
+		out << elem.x() << ' ' << elem.y() << endl;
+	}
+	out.close();
+}

@@ -12,4 +12,5 @@ add_executable(runTests test/tests.cpp)
 target_link_libraries(runTests ${GTEST_LIBRARIES} pthread)
 
 #add_executable(Trajectory main.cpp sommet.cpp segment.cpp arc.cpp graphe.cpp dijkstra.cpp)
-#add_executable(main.cpp sommet.cpp segment.cpp obstacle.cpp dijkstra.cpp optimal_path.cpp)
+set ( CMAKE_C_FLAGS "lstdc++fs")
+add_executable(main.cpp sommet.cpp segment.cpp obstacle.cpp dijkstra.cpp optimal_path.cpp config.cpp)
