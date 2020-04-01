@@ -1,34 +1,31 @@
-//
-// Created by Sizov on 24.01.2020.
-//
-
-#ifndef TRAJECTORY_SOMMET_H
-#define TRAJECTORY_SOMMET_H
-
+#pragma once
+#include "includes.h"
 
 class sommet {
 private:
-    double x;
-    double y;
+  double x_;
+  double y_;
+
 public:
-    sommet(double coor_x, double coor_y);
+  sommet() = default;
+  sommet(const sommet&) noexcept;
+  sommet(double, double) noexcept;
 
-    double det(sommet s1, sommet s2);
+  double x() const noexcept;
+  double y() const noexcept;
 
-    sommet operator=(const sommet &s1);
-
-    sommet operator+=(const sommet &s2);
-
-    sommet operator-=(const sommet &s2);
-
-    sommet operator*=(const double &scalar);
-
+  void swap(sommet&) noexcept;
+  sommet& operator= (const sommet&) noexcept;
+  sommet& operator+=(const sommet&) noexcept;
+  sommet& operator-=(const sommet&) noexcept;
+  sommet& operator*=(double) noexcept;
 };
 
-sommet operator+(const sommet &s1, const sommet &s2) {
-    sommet s = s1;
-    return s += s2;
-}
-
-
-#endif //TRAJECTORY_SOMMET_H
+bool operator==(const sommet&, const sommet&) noexcept;
+bool operator!=(const sommet&, const sommet&) noexcept;
+sommet operator+(sommet, const sommet&) noexcept;
+sommet operator-(sommet, const sommet&) noexcept;
+sommet operator*(double, sommet) noexcept;
+sommet operator*(sommet, double) noexcept;
+double det(const sommet&, const sommet&) noexcept;
+double prod(const sommet&, const sommet&) noexcept;

@@ -1,20 +1,26 @@
-//
-// Created by Sizov on 24.01.2020.
-//
-
-#ifndef TRAJECTORY_SEGMENT_H
-#define TRAJECTORY_SEGMENT_H
-
+#pragma once
 #include "sommet.h"
 
 class segment {
 private:
-    sommet s1;
-    sommet s2;
-    double length;
+  sommet beg_;
+  sommet end_;
+  double length_;
+
 public:
-    segment(sommet s1, sommet s2);
+  segment() = default;
+  segment(const segment&) = default;
+  segment(const sommet&, const sommet&) noexcept;
+
+  const sommet& begin() const noexcept;
+  const sommet& end() const noexcept; 
+  double length() const noexcept;
+  sommet outer_normal() const noexcept;
+
+  void swap(segment&) noexcept;
+  segment& operator=(const segment &) = default;
 };
 
-
-#endif //TRAJECTORY_SEGMENT_H
+bool operator==(const segment&, const segment&) noexcept;
+bool operator!=(const segment&, const segment&) noexcept;
+bool intersection(const segment&, const segment&) noexcept;
