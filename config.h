@@ -33,12 +33,10 @@ template<typename path_holder>
 inline
 typename enable_if<has_begin_end<path_holder>::value>::type
 write_path(const path_holder& cont) {
-	ifstream  src( input_path(), ios::binary);
-	ofstream  dst(output_path(), ios::binary);
+	ifstream src( input_path(), ios::binary);
+	ofstream dst(output_path(), ios::binary);
 	dst << src.rdbuf();
 	src.close();
-	dst.unsetf(ios::binary);
-	dst.setf(ios::app);
 	dst << endl;
 	dst << "[$OptPath]" << endl;
 	for (const auto& elem : cont) {
