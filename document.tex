@@ -1,0 +1,602 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+%\usepackage{mathtext}
+\usepackage[french]{babel}
+\usepackage{amsthm}
+\usepackage{arydshln}
+\usepackage{nccrules}
+
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{eufrak}
+\usepackage{tocloft}
+\usepackage[center]{titlesec}
+\usepackage[utf8]{inputenc}
+
+%Для рисунков
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{topcapt}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{tikz}
+%\usepackage{citesort}
+
+%%%%%%%%%%%%%%%%%% DEFINE NEW COUNTERS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcounter{isElectronicVersion} % Must be set as 1 if the electronic version with animations is to be created, otherwise the printed version will be created
+
+%%%%%%%%%%%%%%%%%% SET NEW COUNTERS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{isElectronicVersion}{0} % 1 - electronic, 0 - printed
+
+%%%%%%%%%%%%%%%%%% MATH OPERATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareMathOperator\dv{div} % divegence
+\DeclareMathOperator\id{I}   % identity matrix
+\DeclareMathOperator\tr{tr}   % trace operator
+\DeclareMathOperator\sgn{sgn}   % signum operator
+%%%%%%%%%%%%%%%%%% BOLD SYMBOLS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\bu}{\mathbf{u}}  % bold u
+\newcommand{\bV}{\mathbf{V}}  % bold V
+\newcommand{\bU}{\mathbf{U}}  % bold U
+\newcommand{\bt}{\mathbf{t}}  % bold t
+\newcommand{\bq}{\mathbf{q}}  % bold q
+\newcommand{\bx}{\mathbf{x}}  % bold x
+\newcommand{\be}{\mathbf{e}}  % bold e
+\newcommand{\bbs}{\mathbf{s}}  % bold n
+\newcommand{\bn}{\mathbf{n}}  % bold n
+\newcommand{\bp}{\mathbf{p}}  % bold p
+\newcommand{\bc}{\mathbf{c}}  % bold c
+\newcommand{\bs}{\mathbf{s}}  % bold s
+\newcommand{\cB}{{\cal B}} % calligraphic B
+\newcommand{\mx}{\mathrm{max}}  % roman max
+\newcommand{\mn}{\mathrm{min}}  % roman min
+\newcommand\norm[1]{\left\lVert#1\right\rVert}
+\newcommand{\bcu}{\mathbf{U}} % bold U
+\newcommand{\bct}{\mathbf{T}} % bold T
+\newcommand{\bpsi}{\bm{\psi}} % bold psi
+\newcommand{\bsigma}{\bm{\sigma}} % bold sigma
+\newcommand{\btau}{\bm{\tau}} % bold tau
+%%%%%%%%%%%%%%%%%% CALLIGRAPHIC SYMBOLS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\epss}{{\cal E}}
+\newcommand{\cL}{{\cal L}}
+\newcommand{\cT}{{\cal T}}
+\newcommand{\cQ}{{\cal Q}}
+
+%%%%%%%%%%%%%%%%%% DIFFERENTIAL OPERATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\pd}[2]{ % partial first derivative
+	\dfrac{\partial #1}{\partial #2}
+} 
+\newcommand{\opd}[2]{ % ordinary first derivative
+	\dfrac{\mathrm{d} #1}{\mathrm{d} #2}
+}
+\newcommand{\pddB}[2]{ % partial first derivative with function bordered by braces
+	\dfrac{\partial }{\partial #2}\Bigl(#1\Bigr)
+} 
+\newcommand{\pdd}[3]{ % partial second derivative
+	\dfrac{\partial^2 #1}{\partial #2 \partial #3}
+} 
+%%%%%%%%%%%%%%%%%% NORM OPERATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\normInf}[1]{|#1|_\infty} % infinity-norm
+
+\newtheorem{dfn}{Definition}
+
+\graphicspath{{img/}}
+
+%Точечки в Содержании
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+%Центрирование Содержания
+\renewcommand\cfttoctitlefont{\hfill\Large\bfseries}
+\renewcommand\cftaftertoctitle{\hfill\mbox{}}
+
+%Точка после Разделов в Содержании
+\let \savenumberline \numberline
+\def \numberline#1{\savenumberline{#1.}}
+\usetikzlibrary{arrows,positioning}
+\usepackage{geometry}
+\geometry{
+	a4paper,
+	total={170mm,257mm},
+	left=20mm,
+	top=20mm
+}
+\begin{document}	
+	\tableofcontents
+	\title{Planification de trajectoire}
+	\maketitle
+	\section{Introduction}
+	
+	Il est connu que le problème de la trajectoire optimale d'un point matériel dans un milieu avec des obstacles polygonaux peut être résolu en le réduisant au problème de trouver le chemin le plus court dans un graphe non orienté. Les sommets du graphe seront le point de départ, le point d'arrivée, ainsi que les sommets de tous les obstacles. Si le segment reliant deux points sur la carte du problème est correct, c'est-à-dire s'il ne traverse pas les obstacles et ne se trouve pas à l'intérieur de l'obstacle, l’arc correspondante du graphe devrait avoir un poids égal à la longueur du segment. Si le segment n'est pas correct au sens de la définition donnée ci-dessus, soit l’arc correspondante n'est pas ajoutée dans le graphe, soit un poids + infini elle est attribué (selon l'implémentation). À son tour, le problème du chemin le plus court entre deux sommets d'un graphe (dans notre cas, c'est le début et la fin du trajet) est résolu par l'algorithme classique de Dijkstra.
+	
+	Compte tenu de ce qui précède, le cycle du programme devrait comprendre les étapes suivantes:
+	
+	1) Traitement des données de source. Au début des travaux, il faut fournir au programme des informations sur les coordonnées du départ et de l'arrivée, ainsi qu'indiquer la géométrie de tous les obstacles.
+	
+	2) Construction d'un graphe non orienté. Ayant les données géométriques du problème, il faut construire un graphe des chemins possibles. Pour cela, il est nécessaire de déterminer les critères selon lesquels chaque arc sera ajoutée dans le graphe, et d'attribuer les poids corrects à toutes les arcs ajoutées dans le graphe.
+	
+	3) Algorithme de Dijkstra. Trouvez le chemin le plus court entre une paire de sommets correspondant au début et à la fin de la trajectoire dans un graphe non-orienté donné.
+	
+	4) Interprétation géométrique des résultats. En utilisant le chemin le plus court calculé dans le graphe, il est nécessaire de restaurer la trajectoire correspondante sur la carte du problème.
+	
+	5) Visualisation des résultats. En utilisant un logiciel approprié, il faut dessiner une carte et la trajectoire optimale calculée.
+	
+	Une modification du problème est possible: au lieu d'un point matériel, on peut considérer le mouvement d'un cercle de rayon arbitraire. Ce problème peut être réduit au problème de remplacement initial des obstacles. Cette technique sera décrite plus en détail au chapitre 5. Une généralisation du problème au cas d'un rayon arbitraire d’objet se réduit à une modification de la première étape du cycle de programme. Les étapes restantes ne sont pas sujettes à changement.
+	
+	L'implémentation logicielle peut également être systématisée. Toutes les classes et fonctions implémentées dans le programme peuvent être séparées en 4 blocs logiques en fonction de leur rôle dans la mise en œuvre de l'algorithme:
+	
+	1) L'unité de travail avec le système de fichiers. Elle est responsable de la lecture de la carte, de l'enregistrement de la trajectoire calculée et de la visualisation des données (étapes 1 et 5). Les éléments de code liés à ce bloc sont combinés dans des fichiers « config ». Des scripts Matlab séparés (dossier « Visualsation ») sont responsables de la visualisation des données. Une description du fonctionnement de ces objets se trouve au chapitre 5.
+	
+	2) Unité de traitement des objets géométriques (étapes 1 à 4). Elle combine les classes de sommets, segments et obstacles, ainsi que toutes les opérations de base pour travailler avec ces objets. Le code est contenu dans les fichiers  « sommet », « segment », « obstacle ». Une description du fonctionnement de l'unité peut être trouvée dans le chapitre 1.
+	
+	3) Unité de traitement des graphes non-orientés. Elle contient des implémentations de graphes non-orientés et l'algorithme de Dijkstra. Les codes sont contenus dans les fichiers « no\_graph » et « dijkstra », respectivement. Une description du fonctionnement de l'unité peut être trouvée dans les chapitres 3-4.
+	
+	4) Unité de réinterprétation des données. Comme déjà indiqué, le problème d'origine est résolu en réduisant à un autre problème, qui a une forme différente de données d'entrée / sortie. Cela signifie que le processus de calcul est précédé de la réinterprétation des données d'entrée (de la carte d'obstacles au graphique non orienté), et une fois le résultat obtenu, la réinterprétation inverse suit (du chemin du graphique au chemin de la carte). Pour ces transitions, un bloc séparé est alloué dans le programme, dont le code est contenu dans le fichier optimal\_path. Ce bloc est décrit au chapitre 2.
+	
+	De plus, parmi le code source du programme, il y a un fichier « includes » contenant toutes les dépendances externes du projet. Pour améliorer la portabilité du code, nous nous sommes limités à la bibliothèque C++ standard. Plus en détail, les fichiers STL connectés au projet seront discutés lorsque des objets externes apparaissent dans les parties discutées du code.
+	
+	Finalement, le projet contient un fichier d'assemblage Cmake, de son fichier de configuration au format Json, ainsi que d'un dossier de Google Tests (dossier « test »).
+	
+	Tous les éléments du programme sont écrits en C++ (standard 17), à l'exception d'un script pour visualiser les données écrit en Matlab. Le programme est rassemblé par CMake.
+	\section{Classes géométriques de base}
+	\subsection{Le sommet}
+	Le sommet est une structure, contenant les coordonnées $x$ et $y$ d'un point. On a déterminé les opérateurs arithmétiques (comme l'addition, multiplication par un réel, relation d'égalité ou non-égalité etc). En plus, on a écrit la fonction "det", qui calcule le déterminant d'une matrice d'un produit vectoriel dans $\mathbb{R}^2$ et utilise les coordonnées des extrémités de deux vecteurs. 
+	\subsection{Le segment}
+	Le segment est un objet géométrique, qui est définie par ses extrémités appartenant à la classe "sommet" et sa longueur, calculé comme une norme Euclidien dans $\mathbb{R}^2$. Le constricteur  de ce classe prend les deux sommets comme les paramètres entrantes et créer une instance en utilisant la liste de initialisations.
+	
+	On a écrit les fonctions, qui peut vous permettent d'obtenir les valeurs des champs privés de la classe. Cela permet d'assurer la vérification d'un principe d'encapsulation. Comme dans le cas précédent on a spécifié les opérateurs arithmétiques "!=" et "==", qui seront utiles dans l'algorithme. 
+	
+	La fonction "intersection" joue une rôle importante dans notre projet. Elle est beaucoup utilisé pendant la recherche d'une schéma optimale. On a adopté l'algorithme, qu'on a trouvé dans un livre de Thomas Cormen "Introduction to algorithms", 1989. Le critère dit que tous segments s'intersecte si et seulement si chaque segment se crosse avec la droite, contenant un autre segment.
+	
+	Par exemple, les sommets $p_3$ et $p_4$ sont de part et d'autre de la segment $\overline{p_1p_2}$ si les vecteurs  $\overline{p_1p_3}$ et $\overline{p_1p_4}$ ont une orientation différente relativement au vecteur $\overline{p_1p_2}$. On peur exprimer cette condition dans le terme d'une produit vectoriel.
+	
+	Il faut que 
+	\begin{equation}
+	A = [(p_3 - p_1) \times (p_2 - p_1)]\cdot[(p_4 - p_1) \times (p_2 - p_1)] \leq 0.
+	\end{equation}
+	\begin{figure}
+		\centering
+		\includegraphics[height=0.8\linewidth]{inter_expl}
+		\caption{Les options différentes et le signe de produit vectoriel}
+		\label{intersect_expl}
+	\end{figure}
+	Si soit  $[(p_3 - p_1) \times (p_2 - p_1)]$ ou $[(p_4 - p_1) \times (p_2 - p_1)]$ sont nulles, cela signifie que soit $p_3$ ou $p_4$ appartient à $\overline{p_1p_2}$ (figures (c) et (d) dans la fig.\ref{intersect_expl}).
+	
+	Pour les situations dégénérés on calcule le produit symétrique
+	\begin{equation}
+	B = [(p_1 - p_3) \times (p_4 - p_3)]\cdot[(p_2 - p_3) \times (p_4 - p_3)],
+	\end{equation}
+	qui doit aussi être non-positive.
+	Pour éviter les situations (e) et (f), quand une de produits vectoriel et nulle, on permet juste la situation, quand une de produits est nulle, mais pas l'autre. Donc, le critère d'intersection est \eqref{critere}.
+	\begin{equation}
+	\label {critere}
+	(A \leq 0 \wedge B <0) \vee (A < 0 \wedge B \leq 0) 
+	\end{equation}
+	\subsection{L'obstacle}
+	L'obstacle est une figure géométrique à éviter pendant le schéma. Il est définit par le vecteur contenant ses sommets. Il y a que deux fonctions associés à cette classe. La fonction \textit{segments} renvoie le \textit{i-ème} segment d'un obstacle.
+	La fonction \textit{contains\_indside} vérifie si le point arbitraire se trouve à l'intérieur d'un obstacle. Pour chaque segment d'un obstacle on vérifie si le point est situé en dessous ou au-dessus de ce segment en prenant en compte l'orientation. Si le point est en dessous, on ajoute +1 au compteur, sinon on soustrait 1. Le point est intérieur si et seulement si le compteur est nulle au final.
+	\section{Graphes non-orientés}
+	
+	Les implémentations connues des graphes non-orientés en C++ se distinguent par leur polyvalence et leur large fonctionnalité. Les bibliothèques de graphes les plus populaires sont des outils d'analyse de topologie dont le travail est basé sur un formalisme abstrait des iterateurs. En raison du fait qu'en C++, chaque conteneur de STL et de Boost possède une interface des itérateurs unique, ces graphes peuvent être créés sur la base de n'importe quel conteneur convenant au cas.
+	
+	Qu'est-ce que cela signifie dans notre cas? Premièrement, le choix d'un conteneur adapté pour stocker des informations sur la topologie et les poids du graphe est principalement confié à l'utilisateur. En fait, les experts ne tirent pas de conclusions sur les avantages des structures de données par rapport aux autres. Pour chaque cas spécifique, il est proposé de choisir une structure de données spécifique.
+	
+	En ce qui concerne les manipulations de données complexes (construction d'arbres, recherche de voisins, etc.), dans notre tâche, cette fonctionnalité complexe, en fait, ne sera pas utilisé. Les graphes sont introduits uniquement pour exécuter l'algorithme de Dijkstra une seule fois. Pendant le fonctionnement de l'algorithme, il est parfois pratique d'avoir des données, par exemple, sur les sommets du graphe qui sont connectés par des arcs au sommet $s$ choisi, mais si ces données sont obtenues au prix d'une recherche linéaire O(N), alors il est logique de s'en passer. Si, par exemple, l'objet aui represent le graphe n'a pas d'autre fonctionnalité que de donner le poids d'un arc sur une paire de sommets donnée (ou $+\infty$ s'il n'y a pas de l'arc liant ces sommets), cela suffira pour compléter l'algorithme de Dijkstra dans un nombre raisonnable d'opérations et avec une complexité O($N^2$).
+	
+	Autrement dit, pour notre tâche, il est conseillé de déterminer la structure de données qui peut être utilisée pour stocker des poids et de mettre en œuvre deux méthodes simples: rechercher et attribuer un poids à une paire de sommets donnée. Dans ce cas, bien sûr, la taille de la structure est inconnue avant la lecture du fichier d'entrée, c'est-à-dire qu'elle doit être déterminée lors de l'exécution.
+	
+	Il existe deux structures de données de ce type dans la bibliothèque standard: std::vector et std::unordered\_map. Les deux options permettent d'accéder à la valeur par un clé (dans le cas d'un vecteur, la clé n'est que l'index de l'élément) en temps constant (dans le cas d'une table de hachage, la constante est amortie). Un vecteur est un choix idéal pour stocker des graphes complets full\_no\_graph. Une table de hachage, en revanche, est un bon choix pour stocker des graphes éclairsis spar\_no\_graph, c'est-à-dire ceux dans lesquels le nombre des arcs est relativement petit. Nous allons créer les deux implémentations et les hériter de l'interface no\_graph commune:
+	
+	\begin{figure}
+		\centering
+		\begin{tikzpicture}[node distance=1cm, auto]  
+		\tikzset{
+			mynode/.style={rectangle,rounded corners,draw=black, top color=white, bottom color=blue!30,very thick, inner sep=1em, minimum size=3em, text centered},
+			myarrow/.style={->, >=latex', shorten >=1pt, thick},
+			mylabel/.style={text width=7em, text centered} 
+		}  
+		\node[mynode] (parent) {no\_graph};  
+		\node[below=3cm of parent] (dummy) {}; 
+		\node[mynode, left=of dummy] (son1) {full\_no\_graph};  
+		\node[mynode, right=of dummy] (son2) {spar\_no\_graph};
+		\node[mylabel, left=of parent] (label1) {réalisation par vecteur std::vector};  
+		\node[mylabel, right=of parent] (label2) {réalisation par hash-map std::unordered\_map};
+		\draw[myarrow] (parent.south) -- ++(-.5,0) -- ++(0,-1) -|  (son1.north);	
+		\draw[myarrow] (parent.south) -- ++(.5,0) -- ++(0,-1) -|  (son2.north);
+		\end{tikzpicture} 
+		\medskip
+		\caption{Diagramme d'héritage de l'interface no\_graph} 
+	\end{figure}
+	
+	\subsection {Vecteur}
+	La classe full\_no\_graph contiendra un vecteur unidimensionnel de type double. Ce seront des lignes de la matrice d'adjacence triangulaire supérieure d'un graphe non-orienté $G$ empilées les unes après les autres: dans ce cas, les éléments diagonaux ne s'adapteront pas, car leurs poids sont déjà évidemment nuls (c'est-à-dire que nous pouvons toujours supposer $i < j$). Il ne reste plus qu'à calculer, par les nombres $i,j$, $i \neq j$, deux sommets du graphe, le numéro de l'élément correspondant à la cellule de la matrice d'adjacence $M_{min (i, j), max (i, j)}$.
+	
+	
+	\subsection {Table de hachage}
+	La classe spar\_no\_graph doit fournir un nouvel objet clé, équivalent à une paire d'index de vertex, ainsi que les foncteurs hasher et equal\_to pour cet objet. Au cours du travail, deux idées sont nées: essayer de générer un bon hachage symétrique (c'est-à-dire pour une paire de sommets du graphe $i$ et $J$ $hash(i, j) = hash(j, i)$), et implémenter la fonction equal\_to comme celle-ci de sorte que l'arc $(i, j)$ est considéré comme égal à l'arc $(j, i)$. La deuxième idée était d'utiliser la combinaison XOR-SLL classique pour concaténer les hachages et créer un equal\_to primitif, revendiquant l'égalité des arcs uniquement si les deux extrémités de ces arcs coïncident (a1.beg() == a2.beg() \&\& a1.end() == a2.end()). Avec cette approche, la recherche d'un élément nécessite moins de vérifications, mais parfois elle nécessite de faire un swap des sommets quand on passe des arguments à la fonction no\_graph::cost. Laquelle des options est préférable en termes de la performance dépend fortement des méthodes de hachage, et une étude détaillée de ce problème dépasse le cadre de notre recherche.
+	
+	
+	\section{Algorithme de Dijkstra}
+	
+	Comme il était indiqué précédemment (voir l’Introduction), le problème de la trajectoire optimale d'un point matériel dans un milieu avec des obstacles polygonaux se réduit au problème de trouver le chemin le plus court dans un graphe non-orienté. Ce problème peut être résolu par l'algorithme classique de Dijkstra. Dans cette section, nous ne décrirons pas en détail l'idée de l'algorithme. Au lieu de cela, nous nous concentrerons sur l'implémentation de l'algorithme de Dijkstra en C++, et discuterons des approches possibles et des structures de données optimales.
+	
+	L'implémentation de l'algorithme de Dijkstra dans le cas général se réduit à ce qui suit: pour un graphe $G$ non-orienté sur $N$ sommets et une paire de sommets $s$ (début de trajet) et $t$ (fin de trajet), il faut obtenir un ensemble ordonné de sommets $s \rightarrow p\_1 \rightarrow ... \rightarrow p\_n \rightarrow t$, correspondant au chemin optimal. Pour la généralité, nous associerons les sommets et leurs indices naturels. On suppose que, connaissant une paire d'indices, nous pouvons obtenir la distance entre les sommets qui leur corresponde dans le graphe $G$, et aussi, en utilisant un ensemble fini d'indices, nous pouvons reconstruire l'ensemble de points par lesquels passe la courbe brisée de la trajectoire optimale.
+	
+	Étant donné que, selon le plan donné dans l'introduction, l'algorithme Dijkstra est appelé exactement une fois dans notre programme, nous n'avons pas besoin de stocker de données entre les appels ni de fournir une interface polyvalente pour les utilisateurs. Par conséquent, il est pratique de présenter notre algorithme sous la forme d'une fonction simple. L'approche des langages comme Java, dans lesquels Dijkstra est implémenté d’habitude comme un classe, est trop lourde et peu naturelle pour C ++.
+	
+	Discutons maintenant des structures de données utilisées dans l'algorithme.
+	
+	Premièrement, pour la mise en œuvre de la Dijkstra, nous devons connaître les distances les plus courtes entre le sommet $s$ et les autres sommets du graphe, et également pour chaque sommet $p$ du graphe donné, nous devons connaître le sommet précédant dans le chemin le plus court de $s$ à $p$. Étant donné que ces données sont initialement inconnues et activement utilisées, elles devraient être stockées en mémoire dans certaines structures de données. Les exigences que nous avons pour ces structures sont les suivantes: il faut avoir un accès rapide pour lire / écrire n'importe quel élément, mais nous n'utilisons jamais l'insertion et la suppression. La solution optimale pour un tel cas est std::vector.
+	
+	De plus, à chaque étape de l'algorithme, nous devons noter quels sommets du graphe n'ont pas encore été visités. Pour implémenter la structure de données, il est possible d’utiliser std::vector$<$bool$>$, qui a une longueur $N$ (le nombre de sommets de graphe) et contient « false » si le sommet correspondant a déjà été visité, et « true », sinon. Cette approche est avantageux en sens de la mémoire, car une implémentation spéciale d'un vecteur de type « bool » en STL alloue seulement 1 bit pour le stockage de chaque élément. D'un autre côté, à chaque itération, il faudra soit parcourir tout le vecteur et ne jamais supprimer les sommets visités, soit supprimer des éléments dans un milieu du vecteur. Les deux solutions prennent du temps et ne sont pas naturelles pour la tâche. On note un détail intéressant: l'algorithme ne nécessite pas d'accès arbitraire aux éléments d'un ensemble de sommets non visités. Au lieu de cela, à chaque itération, nous parcourons tour à tour tous les sommets dans un certain ordre. Ainsi, nous pouvons utiliser une structure de données de liste pour la mise en œuvre. Dans notre travail, std::forward\_list$<$size\_t$>$ est proposé. Cette structure de données est une fois et demie moins lourde que std::list $<$size\_t$<$, car elle ne contient pas de pointeurs « backward ». Il n'est pas inférieur au vecteur dans aucune des asymptotiques et nous permet également d'éliminer les éléments dans un milieu de liste en temps constant. Le seul point faible de std::forward\_list est la présence de transitions d'un nœud au suivant par un pointeur vers un endroit arbitrairement distant sur le heap. En moyenne, c'est un processus plus long que les itérations sur un vecteur. Nous pensons que le surcoût pour de telles transitions est moins grave qu'un surcoût pour les itérations répétées sur les sommets visités. Or une conclusion rigoureuse nécessite une série de benchmarks.
+	
+	Un point intéressant dans l'implémentation de la fonction dijkstra est de trouver les sommets les plus proches de $s$ dans la liste non visitée. À première vue, pour ce faire, il suffit d'exécuter l'algorithme std::find\_min de std::algorithm. En fait, cela ne peut pas être suffisant, car une fois l'élément non visité le plus proche de s est trouvé, il doit être supprimé. Et pour cela il faut lancer le pointeur provenant de l'élément précédent, dont l'emplacement, en général, est inconnu. Pour cette raison, le conteneur forward\_list ne fournit même pas de méthode spéciale pour supprimer un élément donné. À la place, il existe une méthode forward\_list::erase\_after qui supprime non pas l'élément spécifié dans l'argument, mais le suivant.
+	
+	En conséquence, la solution optimale serait d'implémenter un analogue de std::find\_min: itérer sur forward\_list avec deux itérateurs concaténés it\_prev et it\_curr, où it\_curr pointera toujours vers l'élément suivant it\_prev. Pour stocker un pointeur sur l'élément minimum, 2 itérateurs it\_before\_min et it\_min seront également nécessaires. Alors que it\_min pointera vers l'élément minimal non visité à la fin de la traversée, it\_before\_min pointera vers l'élément précédent. Ainsi, grâce à unvisited.erase\_afrer (it\_before\_min), nous supprimerons l'élément non visité le plus proche de $s$.
+	
+	Lorsque l'algorithme de Dijkstra a terminé les calculs, il faut formater le résultat sous forme d'une autre structure de données, pratique pour une utilisation par d'autres routines. Pour cela, forward\_list ou vector pourrait également convenir, mais nous nous sommes installés sur std::list$<$size\_t$>$. Cette structure est plus universelle car elle permet l'itération dans les deux sens et l'insertion/suppression d'éléments dans le milieu O(1). Sa lourdeur et sa lenteur ne seront pas ressenties par l'utilisateur, car en moyenne le nombre de sommets dans la trajectoire calculée est petit par rapport à $N$ (voir notamment le cas du mouvement d'un objet de diamètre non nul).
+	
+	\section{Construction du graphe}
+	
+	L'élément le plus complexe du programme est la construction d'un graphe correspondant à une carte d'obstacles donnée.
+	
+	Tout d'abord, il est raisonnable de vérifier si le point de départ et le point d'arrivée se trouvent à l'intérieur de l'obstacle. Si c'est le cas, alors évidemment aucun chemin approprié n'existe, et le programme devrait signaler une exception.
+	
+	Si cela ne s'est pas le cas, c'est-à-dire les deux points ont les coordonnées correctes, alors la trajectoire peut exister. Ainsi, il faut implémenter un callable qui permet de déterminer à partir d'un segment donné s'il intersecte avec des obstacles et s'il ne se trouve pas à l'intérieur de l'un des obstacles. Si le segment est correct au sens de la définition donnée, l'arc du graphe doit être associée à ce segment.
+	
+	\subsection{Optimal\_path (correct\_segment)}
+	Dans le processus de construction du graph on utilise la fonction lambda \textit{correct\_segment}. Cette fonction vérifie si le segment intersecte avec d'autres segments et si le segment se trouve à l'intérieur de l'obstacle. Cela se fait à l'aide de fonctions \textit{intersection} (fonction de classe \textit{segment}) et \textit{contains\_inside} (fonction de classe \textit{obstacle}). Un point subtil à clarifier est le cas d'un obstacle à auto-intersection. Dans ce cas, le segment contesté sera reconnu comme segment d'obstacle, et la vérification habituelle pour voir si ce segment se trouve à l'intérieur de cet obstacle peut donner un résultat ambigu, car le segment fait formellement partie de la frontière de l'obstacle. Puisqu'on doit exclure une telle situation, on introduit un contrôle supplémentaire en déplaçant le milieu du segment sur une petite distance \textit{eps} en direction de la normale externe (c'est-à-dire à l'intérieur de l'obstacle) et vérifie maintenant s'il se trouve à l'intérieur de l'obstacle. Ci-dessous (figure~\eqref{fig:Self-intersection}) une illustration d'un tel cas. 
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.33\linewidth]{images/Self-intersection.pdf}
+		\caption{Auto-intersection}
+		\label{fig:Self-intersection}
+	\end{figure}
+	
+	Si on considère un segment qui n'est pas un segment d'obstacle, on vérifie uniquement l'absence d'intersections avec des obstacles et que le segment (son milieu) ne se trouve à l'intérieur d'aucun obstacle. Ce dernier permet de traiter les situations suivantes (voir les figures~\eqref{fig:inside}--\eqref{fig:overlay}: des segments rouge seront éliminées). 
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.33\linewidth]{images/Inside.pdf}
+		\caption{Segment à l'intérieur d'obstacle}
+		\label{fig:inside}
+	\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.33\linewidth]{images/Inner_segment.pdf}
+		\caption{Segment reliant deux sommets d'un obstacle}
+		\label{fig:corner-to-corner}
+	\end{figure}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.33\linewidth]{images/Overlay.pdf}
+		\caption{Superposition d'obstacles}
+		\label{fig:overlay}
+	\end{figure}
+	
+	Lorsque l'analyseur de segments est écrit, il faut comprendre exactement comment numéroter les sommets du graphe. Le problème est qu'à ce stade tous les sommets des obstacles n'ont qu'une numérotation locale (leur ordre dans la liste des sommets d'un obstacle). Initialement, ils n'ont pas des numéros globales dans la liste des sommets. C'est-à-dire que, par le numéro d'obstacle $i$ et le numéro d'un sommet dans cette obstacle $j$, il faut déterminer le numéro du sommet dans la liste de tous les sommets. Donc, il faut introduire une fonction $f: N \times N \rightarrow N$, $f(i, j) = k$, où $k$ est un numéro d'un sommet dans la numérotation globale. Maintenant, nous convenons que le départ aura le numéro global $k = 0$, l'arrivée sera le numéro global $k = 1$, et tous les obstacles seront numérotés dans l'ordre: d'abord, tous les sommets du premier obstacle dans le vecteur d'obstacles $f(0,0) = 2$, ..., $f(0, n_0-1) = n_0 + 1$, puis tous les sommets du second $f(1,0) = n_0 + 2$, ..., $f(1, n_1-1) = n_0 + n_1 + 1$, etc.
+	Malheureusement, les problèmes de numérotation ne s'arrêtent pas ici. Le fait est que les noméros des sommets de la future trajectoire obtenus par l'algorithme de Dijkstra sont des nombres dans la numérotation globale. Autrement dit, il est nécessaire d'appliquer la transformation inverse $f^{- 1}(k)$ pour obtenir les coordonnées des sommets résultants du chemin. Cette transformation est bijective, mais sa conversion nécessite des calculs supplémentaires avec des indices.
+	
+	Nous avons proposé une méthode plus simple - à savoir, copier tous les sommets dans un vecteur, dans lequel le numéro de l'élément sera simultanément son numéro dans la numérotation globale. Cette méthode est très coûteuse en mémoire, c'est-à-dire que la quantité de mémoire allouée au programme est presque doublée avec cet approche. Néanmoins, une fois que nous avons copié les éléments dans un tel vecteur, nous n'avons plus besoin d'effectuer les opérations de renumérotation des objets (nous avons une liste de tous les sommets en deux exemplaires - une liste monolithique de sommets à transférer dans le graphe et une liste originale des obstacles). Cette approche ne nécessite pas de calculs supplémentaires: il n'y a pas besoin de modifier les objets géométriques. D'autres approches impliqueraient, par exemple, le stockage permanent de plusieurs obstacles dans un même objet. Cela rendrait difficile de travailler avec des obstacles. Le sommet ne pèse que 16 octets, puisque il se compose de deux nombres doubles. Donc, la copie est comparable en coût de mémoire à la création d'un système de pointeurs ou d'itérateurs pour la renumérotation. Par conséquent, cette approche avec les indirections n'est pas discutée ici.
+	
+	Une fois tous les sommets sont copiés dans un seul vecteur, nous pouvons les parcourir et calculer tous les segments corrects à l'aide de la fonction lambda segment\_analyzer. Nous passerons le graphe résultant à l'algorithme de Dijkstra directement à l'intérieur de la fonction optimal\_path (l'algorithme de Dijkstra peut être considéré comme le fonctionnement interne de l'algorithme qui n'est pas visible pour l'utilisateur, et son appel est masqué à l'intérieur de la fonction optimal\_path).
+	
+	Ensuite, nous restaurons les coordonnées des sommets dont les indices l'algorithme de Dijkstra a mis dans le chemin le plus court. La liste résultante des sommets est retournée à l'utilisateur.
+	
+	
+	
+	\section{I/O de programme : lecture et modification de fichiers}
+	
+	Notre programme devrait être en mesure de recevoir et de traiter les données d'entrée dans un format qui lui convient, ainsi que les données de sortie dans un format convenant aux prochaines étapes du processus. Par « étape suivante » nous entendons le script Matlab, que nous utiliserons pour visualiser les résultats. Analysons les entrées et sorties du programme. Au début des travaux, il faut connaître les coordonnées du départ, de l'arrivée, ainsi que l'emplacement de tous les obstacles. À la fin il faut savoir la meme chose pour dessiner une carte, et de plus, il faut une liste de sommets du chemin optimal. La similitude des entrées et des sorties nous amène à l'idée de créer un format de fichier unique qui sera commodément traité dans Matlab pour dessiner des graphiques, et qui peut également être utilisé pour obtenir des données cartographiques.
+	
+	\subsection {Lecture de la carte}
+	L'un des points clés de notre projet est la lecture des données et la construction d'une carte d'obstacles appropriée. Un élément fondamental est la procédure de «padding» dans le cas d'un disque, c'est-à-dire le lissage des coins des obstacles en utilisant un nombre suffisant de petits segments supplémentaires. La technique de cette procédure sera décrite plus en détail ci-dessous.
+	
+	Notre fonction \textit{parse\_map} est un analyseur complexe de données d'entrée enregistrées dans le fichier \textit{input.txt}. Cette fonction génère une liste d'obstacles à partir des données dans \textit{input.txt}, ainsi que le point de départ (\textit{start}) et le point d’arrivée (\textit{finish}), et dans le cas d'un disque met également en œuvre le soi-disant «padding» décrit ci-dessus. Tout d'abord, la fonction ‘parse’ les points de départ et d’arrivée, le rayon du disque (le cas d'un point est considéré comme le cas d'un disque avec un rayon nul), le nombre d'obstacles, puis les coordonnées des sommets des obstacles. Le processus d'analyse de segments est effectué à l'aide de la fonction lambda \textit{segment\_analyzer}. Nous utilisons le concept de fonction lambda à des fins d'encapsulation, améliorant ainsi la fiabilité du code. Dans le processus de traitement des données à l'intérieur de \textit{segment\_analyzer}, les principales étapes suivantes sont distinguées:
+	
+	\begin{enumerate}
+		\item vérification du parallélisme des segments consécutifs, 
+		\item traitement du cas de la jonction concave des segments,
+		\item traitement du cas de la jonction convexe des segments.
+	\end{enumerate} 
+	
+	Les deux derniers cas sont traités dans le cas du disque.
+	Ci-dessous, nous expliquons en détail chacune des étapes.
+	
+	\begin{enumerate} 
+		\item Pour vérifier le parallélisme des segments successifs (comme dans la figure ci-dessous), nous regardons le sinus de l'angle entre les normales à ces segments (\textit{sin\_phi} dans le code). Dans le cas d'un sinus très proche de zéro, nous considérons ces deux segments comme un seul, c'est-à-dire que nous passons au sommet suivant.
+		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[height=0.18\linewidth]{images/Parallel.pdf}
+			\caption{Deux segments parallels}
+			\label{fig:parallels}
+		\end{figure}
+		
+		\item Dans le cas de la jonction concave des segments (c’est à dire, $\textit{sin\_phi} < 0$) on n’a pas besoin de faire le «padding», il suffit d'ajuster les segments sur le rayon $r$ du disque. Cette situation-là est illustrée ci-dessous.
+		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[height=0.4\linewidth]{images/Concave.pdf}
+			\caption{Jonction concave}
+			\label{fig:concave}
+		\end{figure}
+		
+		Dans cette image on cherche les coordonées de point vert. Pour cela on peut écrire des équations paramétriques des droites $l_1$ et $l_2$ décalées sur $r$ dans la direction de la normale correspondante. En égalisant les expressions de ces lignes, on trouve le point d'intersection. Plus précisement, on a
+		
+		\begin{equation*}
+		l_1: 
+		\begin{pmatrix}
+		x\\
+		y
+		\end{pmatrix} =
+		\begin{pmatrix}
+		\textrm{curr}.x\\
+		\textrm{curr}.y
+		\end{pmatrix} +
+		\begin{pmatrix}
+		-n_1.y\\
+		n_1.x
+		\end{pmatrix}t_1 + r
+		\begin{pmatrix}
+		n_1.x\\
+		n_1.y
+		\end{pmatrix}, \quad t_1 \in \mathbb{R},
+		\end{equation*}
+		\begin{equation*}
+		l_2: 
+		\begin{pmatrix}
+		x\\
+		y
+		\end{pmatrix} =
+		\begin{pmatrix}
+		\textrm{curr}.x\\
+		\textrm{curr}.y
+		\end{pmatrix} +
+		\begin{pmatrix}
+		-n_2.y\\
+		n_2.x
+		\end{pmatrix}t_2 + r
+		\begin{pmatrix}
+		n_2.x\\
+		n_2.y
+		\end{pmatrix}, \quad t_2 \in \mathbb{R},
+		\end{equation*}
+		
+		où $(\textrm{curr}.x, \textrm{curr}.y)$ sont les coordonnées du sommet curr, $(n_1.x, n_1.y)$ et $(n_2.x, n_2.y)$ sont les vecteurs directeurs de droits $l_1$ et $l_2$, respectivement. Les derniers termes représentent le décalage dans la direction de la normale. En égalisant les expressions pour $l_1$ et $l_2$ on trouve aisément
+		
+		\begin{displaymath}
+		t_1 = \dfrac{r\textrm{det}(n_1,n_2)}{1+\langle n_1,n_2\rangle} =  \dfrac{r sin\_phi}{1+cos\_phi}.
+		\end{displaymath}
+		
+		Ainsi, on obtient les coordonnées du sommet de cisaillement \textit{inner\_angle\_shift}:
+		
+		\begin{displaymath}
+		r\cdot\begin{pmatrix}
+		n_1.x - \frac{sin\_phi}{1+cos\_phi}n_1.y\\
+		n_1.y + \frac{sin\_phi}{1+cos\_phi}n_1.x
+		\end{pmatrix} 
+		\end{displaymath}
+		
+		\item Et enfin, dans le cas de la jonction convexe des segments ($\textit{sin\_phi} > 0$) on fait le «padding» de la manière suivante: on établit la longueur relative (\textit{arc\_0}) assez petite (d'ordre $10^{-2}$, par exemple), qui détermine le nombre \textit{num\_parts} de segments pour 'lisser' l'angle. Ensuite, on détermine les petits segments de lissage en faisant tourner le vecteur normal $n_1$ (multiplié par $r$), de l'angle correspondant \textit{phi\_k} . Cette rotation est déterminée par la matrice de rotation 
+		
+		\begin{equation*}
+		Q = 
+		\begin{pmatrix}
+		\cos(\textit{phi\_k}) & -\sin(\textit{phi\_k}) \\
+		\sin(\textit{phi\_k}) &  \cos(\textit{phi\_k})
+		\end{pmatrix}.
+		\end{equation*}
+		
+		On obtient donc le sommet de cisaillement \textit{outer\_angle\_shift} sous la forme $r\cdot$sommet$(Qn_1)$. Voici une illustration de ce cas.
+		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[height=0.45\linewidth]{images/Convexe.pdf}
+			\caption{Jonction convexe}
+			\label{fig:convex}
+		\end{figure}
+		
+	\end{enumerate}
+	
+	L'appel à la fonction \textit{segment\_analyzer} se fait via son \textit{bind}-wrapper de liaison reading\_segment. On recourt à l'utilisation de la fonction standard \textit{bind} pour des raisons esthétiques: cela élimine le besoin d'écrire les mêmes arguments \&prev et \&curr à chaque fois.
+	
+	\subsection {Singletones de Meyers}
+	Au début du programme, vous devez lui indiquer l'emplacement des fichiers input.txt et output.txt. Pour ce faire, nous ajoutons des arguments à la fonction principale « main »:
+	La fonction de configuration démarre immédiatement après le démarrage du programme et affecte le chemin d'accès aux fichiers input.txt et output.txt. Si trop peu d'arguments sont passés à main, la fonction config définit les chemins d'accès aux fichiers à leurs valeurs par défaut. Étant donné que le programme ne peut avoir qu'un seul fichier d'entrée et une seule sortie, il est pratique de stocker les chemins d'accès aux fichiers sous la forme de singletones de Meyers. En plus du fait que les singletones reflètent l'idée d'unicité d'un objet pendant tout le cycle du programme, ils sont implémentés de manière thread-safe. La norme de langage C ++ garantit que lorsqu'un initial singletone de Meyers s'initialise dans une application multithread, aucune course de données ne se produit.
+	
+	\subsection {SFINAE}
+	La partie la plus intéressante du fichier de configuration est la fonction de sortie du modèle. Le paramètre modèle est le type de conteneur dans lequel les sommets de la trajectoire sont stockés. Une implémentation naïve de cette fonction ressemble à ceci:
+	
+	{
+		\fontfamily{cmtt}\selectfont
+		\setlength{\parindent}{2em}
+		using namespace std;
+		
+		template$<$typename path\_holder$>$
+		
+		inline void
+		
+		write\_path(const path\_holder\& cont) \{
+		
+		\setlength{\parindent}{4em}
+		// copy input file...
+		
+		ofstream out(output\_path(), ios::app);
+		
+		out << endl;
+		
+		out << "[\$OptPath]" << endl;
+		
+		for (const auto\& elem : cont) {
+			
+			\setlength{\parindent}{6em}	
+			out << elem.x() << ' ' << elem.y() << endl;
+			
+			\setlength{\parindent}{4em}    
+		}
+		
+		out.close();
+		
+		\setlength{\parindent}{2em}
+		\}
+	}
+	
+	Une autre approche consiste à clarifier les exigences mises en avant pour le paramètre path\_holder afin que l'IDE interdise la substitution de classes inappropriées dans la fonction write\_path. Pour ce faire, nous utiliserons la fonction std::enable\_if, qui nous permet de vérifier la condition constexpr au moment de la compilation et, si la condition est vraie, de retourner le type spécifié. Comme condition de test, nous utilisons la condition pour que la classe ait des méthodes begin() et end():
+	
+	{
+		\fontfamily{cmtt}\selectfont
+		\setlength{\parindent}{2em}
+		using namespace std;
+		
+		template$<$typename path\_holder$>$
+		
+		inline typename enable\_if<has\_begin\_end$<$path\_holder$>$::value$>$::type
+		
+		write\_path(const path\_holder\& cont) \{
+		
+		\setlength{\parindent}{4em}
+		// copy input file...
+		
+		ofstream out(output\_path(), ios::app);
+		
+		out << endl;
+		
+		out << "[\$OptPath]" << endl;
+		
+		for (const auto\& elem : cont) {
+			
+			\setlength{\parindent}{6em}	
+			out << elem.x() << ' ' << elem.y() << endl;
+			
+			\setlength{\parindent}{4em}    
+		}
+		
+		out.close();
+		
+		\setlength{\parindent}{2em}
+		\}
+	}
+	
+	Nous supposons que cette condition est suffisante pour un range-based for, sans entrer dans les détails de la mise en œuvre des méthodes elles-mêmes. Pour vérifier l'existance de méthodes, nous utilisons la solution SFINAE standard, basée sur les règles de surcharge de fonctions en C++:
+	
+	{
+		\fontfamily{cmtt}\selectfont
+		\setlength{\parindent}{2em}
+		using namespace std;
+		
+		namespace \{
+		
+		template$<$typename T$>$
+		
+		class has\_begin\_end \{
+		
+		\setlength{\parindent}{4em}
+		using yes = byte;
+		
+		using no = struct \{ yes dummy[2]; \};
+		
+		template<class U>
+		
+		static auto test(U* u) $->$ decltype((*u).begin(), (*u).end(), yes());
+		
+		static no   test(...);
+		
+		\setlength{\parindent}{2em}	
+		public:
+		
+		\setlength{\parindent}{4em}
+		static constexpr bool value =
+		(sizeof(test((T*)nullptr)) == sizeof(yes));
+		
+		\setlength{\parindent}{2em}
+		\};
+		
+		\}
+	}
+	
+	Étant donné que l'opérateur virgule retourne le dernier élément de liste des arguments, decltype acceptera le type de structure « yes » si begin() et end() existent. Sinon, la première fonction test() ne participe pas à la surcharge, par conséquent, test ((T *) nullptr) renverra le type « no », dont la taille est strictement supérieure à la taille de « yes ». SFINAE et if consexpr sont les puissants outils de C ++ pour le branchement de code au moment de la compilation en l'absence de concepts attendus dans la norme de langage C++ 20.
+	
+	\section{Visualisation}
+	On implémente la représentation graphique de la configuration des obstacles et de la trajectoire optimale trouvée en utilisant Octave. Le script \textbf{graphics.m} est fourni avec le fichier \textit{output.txt} généré à la suite de l'exécution du notre code C++ principal. Ce fichier a la structure suivante:
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.6\linewidth]{images/output_structure}
+		\caption{Structure de \textit{output.txt}}
+		\label{fig:output_structure}
+	\end{figure}
+	
+	Le script parse le fichier \textit{output.txt}, y trouvant dans l'ordre approprié les points de départ et d'arrivée, le rayon du disque (rappelons que le cas d'un point est considéré comme un cas particulier d'un disque de rayon nul), le nombre d'obstacles, puis pour chaque obstacle le nombre de ses sommets et leurs coordonnées, et enfin les coordonnées de la trajectoire optimale trouvée. La vérification de la présence de chacun des éléments ci-dessus, et ainsi la lecture ordonnée sont effectuées à l'aide du script \textbf{findSection.m}. En l'absence d’une section, un message d'erreur s'affiche dans Octave command window. A chaque étape de la lecture, l'élément graphique correspondant est tracé. Pour tracer des points et des segments, la fonction standard \textbf{plot} est utilisée. La fonction standard \textbf{fill} est utilisée pour dessiner des obstacles. Cette fonction dessine des polygones remplis, son avantage par rapport à la fonction \textbf{drawPolygon}, qui dessine un polygone sans remplissage, est qu'elle est incluse dans la bibliothèque standard de fonctions et ne nécessite pas l'installation et la connexion de packages supplémentaires (notamment le package \textbf{geometry}). Dans le script on calcule aussi les coordonnées maximales et minimales (\textit{min\_x\_coord, max\_x\_coord, min\_y\_coord, max\_y\_coord}) parmi les sommets des obstacles et les points de départ et d'arrivée. Ceci est utilisé (en tenant compte du rayon du disque) pour définir les limites (axis limits) du graphique final, afin qu'elles couvrent exactement l'espace nécessaire en fonction de l'emplacement des objets sur celui-ci et pour que le graphique soit ainsi plus lisible.
+	
+	On a également utilisé une version réduite du script \textbf{graphics.m} pour dessiner notre graphe lors du débogage du programme principal. Cela a permis, notamment, de détecter l'absence de segments qui auraient dû être présents dans le graphe, et ainsi d'éliminer le problème de la fonction \textit{correct\_segment}, qui par erreur a rejeté quelques segments corrects.
+	
+	\section{Les tests}
+	\subsection{L'information commun}
+	Il est impossible de sous-estimer l'importance de "testing" le code Il y a plusieurs raisons de le faire. 
+	\begin{enumerate}
+		\item{Il faut toujours vérifier que les fonctions marcheront bien et font exactement ce qu'on voulait. }
+		\item {Les tests aident de trouver une erreur au plus tôt possible et d'éviter le temps supplémentaire de le localiser.}
+		\item{Les test servent de documentation au projet, nous permettent de décrire ce que nous attendons de l'exécution de certaines fonctions.}
+	\end{enumerate} 
+	Pour tester le code on a utilisé le "GoogleTest Framework", qui est courant pour les programmes en C++ pour les plateformes différents (Windows, linux, macOS etc). On a ajouté la libraire "googletest" pour éviter les avertissements pendant la compilation. Pour activer le "gtest" dans le projet il faut écrire quelques lignes dans le "CMakeLists.txt" (fig.\ref{gtest})
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\linewidth]{gtest.png}
+		\caption{Connexion d'un Framework dans un projet}
+		\label{gtest}
+	\end{figure}
+	
+	Mais pour lancer les tests il faut assembler une bibliothèque statique "gtest.a".
+	
+	On a fait trois types de tests: unit-tests pour s'assurer l'exécution correctes des certaines fonctions et l'instanciation de classes; intégration tests et tests de l'acceptation pour tester le résultat de la programme entière. Pour chaque test on obtiens soit une notification de succès, comme dans fig.\ref{success} ou la précision la ligne avec le mal réponse.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\linewidth]{success}
+		\caption{Passage réussie des tests}
+		\label{success}
+	\end{figure}
+	Pour la classe "sommet" on a testé les résultats de constructeur en utilisant le "test fixture", qui est la classe héritée de \cal{testing::Test} contenant tous les variables et foncions à tester. En plus, il y a les test pour tous les opérateurs arithmétiques définies par l'utilisateur.
+	
+	Pour la classe "segment" on a aussi écrit le test pour le constructeur (un utilisant "fixture") et pour la fonction "intersection", qui détermine si deux segments se croisent ou non. La fig. \ref{fig:intersection} montre tous les cas possibles, et le comportement de la fonction que on attendre.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.5\linewidth]{intersect}
+		\caption{Les réponses prévus pour la fonction "intersection"}
+		\label{fig:intersection}
+	\end{figure}
+	Dans le code tous les tests sont passé bien. On a aussi examiné le cas, quand un de segments dégénère en un point. Le résultat est fausse, comme prévu.
+	
+	
+	Pour la classe "obstacle" il était plus important de tester la fonction "$contains\_inside$", qui joue la rôle principale dans le projet. Dans la fig. \ref{inside} il y a 3 situations principales: le point est hors la figure, le point est dans la figure et le point est à la frontière. Les réponses prévus sont dans le tableaux. 
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.5\linewidth]{inside}
+		\caption{Les réponses prévus pour la fonction "contains\_inside"}
+		\label{inside}
+	\end{figure}
+	\subsection{Tests d'intégration}
+	Tests d'intégration sont les tests intermédiaires, fait pour vérifier que certains modules de programme marchent bien ensemble.
+	Par exemple, par visualisation de figure \ref{integration} on a montré que l'algorithme offrir les schémas correctes et admissibles. Donc, le but final est juste de choisir l'optimal.
+		\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.5\linewidth]{acceptance}
+		\caption{Tous les schémas possibles partant d'un point (0,0)}
+		\label{integration}
+	\end{figure}
+	\subsection {Tests d'acceptation}	
+	Pour vérifier si le programme travaille correctement, on a dessiné le schéma optimal et tous les obstacles. C'est le méthode plus simple de s'assurer que on ne touche pas aucun des obstacles et que nous passons du point de départ au point final. 
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.4\linewidth]{case_point}
+		\caption{Le schéma optimal pour un point}
+		\label{fig:point}
+	\end{figure}
+	Dans la fig. \ref{fig:point} on voir que le point contourne avec succès l'obstacle et atteint l'objectif. Pour le cercle c'est aussi le cas: il tourne les obstacles, la trajectoire est arrondi. Le schéma est si plus que possible au l'obstacle.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[height=0.5\linewidth]{Exemple1}
+		\caption{Le schéma optimal pour un disque avec le rayon 0.5 }
+		\label{fig:disk}
+	\end{figure}
+\end{document}
