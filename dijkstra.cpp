@@ -12,14 +12,14 @@ list<size_t> dijkstra(const size_t s, const size_t t, const no_graph& g) {
   auto curr = s;
   while (curr != t) {
     auto it_before_min = unvisited.before_begin();
-    auto it_min  = unvisited.begin();
+    auto it_min = unvisited.begin();
     auto it_last = unvisited.end();
     auto it_prev = unvisited.begin();
     auto it_curr = it_prev;
     ++it_curr;
     while (it_curr != it_last) {
       if (path_l[*it_curr] < path_l[*it_min]) {
-        it_min        = it_curr;
+        it_min = it_curr;
         it_before_min = it_prev;
       }
       ++it_prev;

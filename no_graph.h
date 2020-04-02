@@ -34,5 +34,5 @@ private:
   struct arc_equal_to {
     bool operator()(const arc&, const arc&) const noexcept;
   };
-  unordered_map<arc,double,arc_hasher,arc_equal_to> arcs_;
+  unordered_map<arc, double, arc_hasher, arc_equal_to> arcs_;
 };

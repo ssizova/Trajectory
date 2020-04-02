@@ -49,7 +49,7 @@ optimal_path(
 		path.push_back(finish);
 		return path;
 	}
-	
+
 	spar_no_graph g(num_vertices);
 	vector<sommet> all_vertices;
 	all_vertices.reserve(num_vertices);

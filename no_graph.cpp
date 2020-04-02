@@ -4,24 +4,24 @@ const double inf = numeric_limits<double>::infinity();
 
 //Full graph
 
-full_no_graph::full_no_graph(size_t n) 
-: costs_(n*(n-1)/2, inf) {
+full_no_graph::full_no_graph(size_t n)
+  : costs_(n* (n - 1) / 2, inf) {
   n_ = n;
 }
 double  full_no_graph::cost(size_t i, size_t j) const {
   if (i == j) { return 0.; }
   if (i > j) std::swap(i, j);
-  return costs_[((2*n_ - i - 1)*i)/2 + j - i - 1];
+  return costs_[((2 * n_ - i - 1) * i) / 2 + j - i - 1];
 }
 double& full_no_graph::cost(size_t i, size_t j) {
   if (i > j) std::swap(i, j);
-  return costs_[((2*n_ - i - 1)*i)/2 + j - i - 1];
+  return costs_[((2 * n_ - i - 1) * i) / 2 + j - i - 1];
 }
 
 //Sparse graph
 
 spar_no_graph::spar_no_graph(size_t n)
-: arcs_(37) {
+  : arcs_(37) {
   n_ = n;
   arcs_.max_load_factor(3);
 }
@@ -38,7 +38,7 @@ bool spar_no_graph::arc_equal_to::operator()
 double  spar_no_graph::cost(size_t i, size_t j) const {
   if (i == j) return 0.;
   if (i > j) std::swap(i, j);
-  auto it = arcs_.find(arc{i, j});
+  auto it = arcs_.find(arc{ i, j });
   if (it == arcs_.end())
     return inf;
   else
@@ -46,5 +46,5 @@ double  spar_no_graph::cost(size_t i, size_t j) const {
 }
 double& spar_no_graph::cost(size_t i, size_t j) {
   if (i > j) std::swap(i, j);
-  return arcs_[arc{i, j}];
+  return arcs_[arc{ i, j }];
 }
