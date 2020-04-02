@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 		auto path = optimal_path(start, finish, obstacles);
 
 		cout << "Writing data to output file . . ." << endl;
-		write_ptrs(path);
+		write_path(path);
 
 		cout << "Success. See chosen output file for the result!" << endl;
 	}

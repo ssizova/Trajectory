@@ -19,8 +19,8 @@ namespace {
 }
 
 void io_file_manager(int, char**);
-fs::path& input_path();
-fs::path& output_path();
+string& input_path();
+string& output_path();
 
 void parse_map(
 	sommet* const start,
@@ -29,16 +29,20 @@ void parse_map(
 );
 
 void write_obstacles(vector<obstacle> const&);
-template<typename ptrs_holder>
+template<typename path_holder>
 inline
-typename enable_if<has_begin_end<ptrs_holder>::value>::type
-write_ptrs(const ptrs_holder& cont) {
-	fs::copy_file(input_path(), output_path(), fs::copy_options::overwrite_existing);
-	ofstream out(output_path(), ios::app);
-	out << endl;
-	out << "[$OptPath]" << endl;
+typename enable_if<has_begin_end<path_holder>::value>::type
+write_path(const path_holder& cont) {
+	ifstream  src( input_path(), ios::binary);
+	ofstream  dst(output_path(), ios::binary);
+	dst << src.rdbuf();
+	src.close();
+	dst.unsetf(ios::binary);
+	dst.setf(ios::app);
+	dst << endl;
+	dst << "[$OptPath]" << endl;
 	for (const auto& elem : cont) {
-		out << elem.x() << ' ' << elem.y() << endl;
+		dst << elem.x() << ' ' << elem.y() << endl;
 	}
-	out.close();
+	dst.close();
 }
