@@ -1,4 +1,4 @@
-fileID = fopen('output.txt', 'r');
+fileID = fopen('../output.txt', 'r');
 
 %reading mode (point or disk)
 %findSection(fileID, "[mode]"); 
