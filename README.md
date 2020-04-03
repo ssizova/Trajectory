@@ -48,3 +48,5 @@ x1 y1   # coordinates of trajectory nodes
 xn yn
 # EOF
 ```
+### Visualization
+To make Octave visualization of the result, run the script **graphics.m** in visualization folder. If you use not default output file, enter its name as the *fopen* argument in the script.
