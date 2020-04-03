@@ -109,7 +109,7 @@
 	\section{Introduction}
 	
 	Il est connu que le problème de la trajectoire optimale d'un point matériel dans un milieu avec des obstacles polygonaux peut être résolu en le réduisant au problème de trouver le chemin le plus court dans un graphe non orienté. Les sommets du graphe seront le point de départ, le point d'arrivée, ainsi que les sommets de tous les obstacles. Si le segment reliant deux points sur la carte du problème est correct, c'est-à-dire s'il ne traverse pas les obstacles et ne se trouve pas à l'intérieur de l'obstacle, l’arc correspondante du graphe devrait avoir un poids égal à la longueur du segment. Si le segment n'est pas correct au sens de la définition donnée ci-dessus, soit l’arc correspondante n'est pas ajoutée dans le graphe, soit un poids + infini elle est attribué (selon l'implémentation). À son tour, le problème du chemin le plus court entre deux sommets d'un graphe (dans notre cas, c'est le début et la fin du trajet) est résolu par l'algorithme classique de Dijkstra.
-	
+
 	Compte tenu de ce qui précède, le cycle du programme devrait comprendre les étapes suivantes:
 	
 	1) Traitement des données de source. Au début des travaux, il faut fournir au programme des informations sur les coordonnées du départ et de l'arrivée, ainsi qu'indiquer la géométrie de tous les obstacles.
@@ -126,7 +126,7 @@
 	
 	L'implémentation logicielle peut également être systématisée. Toutes les classes et fonctions implémentées dans le programme peuvent être séparées en 4 blocs logiques en fonction de leur rôle dans la mise en œuvre de l'algorithme:
 	
-	1) L'unité de travail avec le système de fichiers. Elle est responsable de la lecture de la carte, de l'enregistrement de la trajectoire calculée et de la visualisation des données (étapes 1 et 5). Les éléments de code liés à ce bloc sont combinés dans des fichiers « config ». Des scripts Matlab séparés (dossier « Visualsation ») sont responsables de la visualisation des données. Une description du fonctionnement de ces objets se trouve au chapitre 5.
+	1) L'unité de travail avec le système de fichiers. Elle est responsable de la lecture de la carte, de l'enregistrement de la trajectoire calculée et de la visualisation des données (étapes 1 et 5). Les éléments de code liés à ce bloc sont combinés dans des fichiers « config ». Des scripts Matlab séparés (dossier « Visualsation ») sont responsables de la visualisation des données. Une description du fonctionnement de ces objets se trouve au chapitre 7.
 	
 	2) Unité de traitement des objets géométriques (étapes 1 à 4). Elle combine les classes de sommets, segments et obstacles, ainsi que toutes les opérations de base pour travailler avec ces objets. Le code est contenu dans les fichiers  « sommet », « segment », « obstacle ». Une description du fonctionnement de l'unité peut être trouvée dans le chapitre 1.
 	
@@ -141,13 +141,13 @@
 	Tous les éléments du programme sont écrits en C++ (standard 17), à l'exception d'un script pour visualiser les données écrit en Matlab. Le programme est rassemblé par CMake.
 	\section{Classes géométriques de base}
 	\subsection{Le sommet}
-	Le sommet est une structure, contenant les coordonnées $x$ et $y$ d'un point. On a déterminé les opérateurs arithmétiques (comme l'addition, multiplication par un réel, relation d'égalité ou non-égalité etc). En plus, on a écrit la fonction "det", qui calcule le déterminant d'une matrice d'un produit vectoriel dans $\mathbb{R}^2$ et utilise les coordonnées des extrémités de deux vecteurs. 
+	Le sommet est une structure, contenant les coordonnées $x$ et $y$ d'un point. On a déterminé les opérateurs arithmétiques (comme l'addition, multiplication par un réel, relation d'égalité ou non-égalité etc). En plus, on a écrit la fonction "det", qui calcule le déterminant d'une matrice composée des coordonnées de deux sommets. 
 	\subsection{Le segment}
 	Le segment est un objet géométrique, qui est définie par ses extrémités appartenant à la classe "sommet" et sa longueur, calculé comme une norme Euclidien dans $\mathbb{R}^2$. Le constricteur  de ce classe prend les deux sommets comme les paramètres entrantes et créer une instance en utilisant la liste de initialisations.
 	
 	On a écrit les fonctions, qui peut vous permettent d'obtenir les valeurs des champs privés de la classe. Cela permet d'assurer la vérification d'un principe d'encapsulation. Comme dans le cas précédent on a spécifié les opérateurs arithmétiques "!=" et "==", qui seront utiles dans l'algorithme. 
 	
-	La fonction "intersection" joue une rôle importante dans notre projet. Elle est beaucoup utilisé pendant la recherche d'une schéma optimale. On a adopté l'algorithme, qu'on a trouvé dans un livre de Thomas Cormen "Introduction to algorithms", 1989. Le critère dit que tous segments s'intersecte si et seulement si chaque segment se crosse avec la droite, contenant un autre segment.
+	La fonction "intersection" joue une rôle importante dans notre projet. Elle est beaucoup utilisé pendant la recherche d'une schéma optimale. On a adopté l'algorithme, qu'on a trouvé dans un livre de Thomas Cormen "Introduction to algorithms", 1989. Le critère dit que tous segments s'intersectent si et seulement si chaque segment se croise avec la droite, contenant un autre segment.
 	
 	Par exemple, les sommets $p_3$ et $p_4$ sont de part et d'autre de la segment $\overline{p_1p_2}$ si les vecteurs  $\overline{p_1p_3}$ et $\overline{p_1p_4}$ ont une orientation différente relativement au vecteur $\overline{p_1p_2}$. On peur exprimer cette condition dans le terme d'une produit vectoriel.
 	
@@ -161,6 +161,7 @@
 		\caption{Les options différentes et le signe de produit vectoriel}
 		\label{intersect_expl}
 	\end{figure}
+	
 	Si soit  $[(p_3 - p_1) \times (p_2 - p_1)]$ ou $[(p_4 - p_1) \times (p_2 - p_1)]$ sont nulles, cela signifie que soit $p_3$ ou $p_4$ appartient à $\overline{p_1p_2}$ (figures (c) et (d) dans la fig.\ref{intersect_expl}).
 	
 	Pour les situations dégénérés on calcule le produit symétrique
@@ -245,8 +246,9 @@
 	
 	Si cela ne s'est pas le cas, c'est-à-dire les deux points ont les coordonnées correctes, alors la trajectoire peut exister. Ainsi, il faut implémenter un callable qui permet de déterminer à partir d'un segment donné s'il intersecte avec des obstacles et s'il ne se trouve pas à l'intérieur de l'un des obstacles. Si le segment est correct au sens de la définition donnée, l'arc du graphe doit être associée à ce segment.
 	
-	\subsection{Optimal\_path (correct\_segment)}
-	Dans le processus de construction du graph on utilise la fonction lambda \textit{correct\_segment}. Cette fonction vérifie si le segment intersecte avec d'autres segments et si le segment se trouve à l'intérieur de l'obstacle. Cela se fait à l'aide de fonctions \textit{intersection} (fonction de classe \textit{segment}) et \textit{contains\_inside} (fonction de classe \textit{obstacle}). Un point subtil à clarifier est le cas d'un obstacle à auto-intersection. Dans ce cas, le segment contesté sera reconnu comme segment d'obstacle, et la vérification habituelle pour voir si ce segment se trouve à l'intérieur de cet obstacle peut donner un résultat ambigu, car le segment fait formellement partie de la frontière de l'obstacle. Puisqu'on doit exclure une telle situation, on introduit un contrôle supplémentaire en déplaçant le milieu du segment sur une petite distance \textit{eps} en direction de la normale externe (c'est-à-dire à l'intérieur de l'obstacle) et vérifie maintenant s'il se trouve à l'intérieur de l'obstacle. Ci-dessous (figure~\eqref{fig:Self-intersection}) une illustration d'un tel cas. 
+	\subsection{Optimal\_path (correct\_segment). \textit{Anastasiya Dulepova}}
+	Dans le processus de construction du graph on utilise la fonction lambda \textit{correct\_segment}. Cette fonction vérifie si le segment intersecte avec d'autres segments et si le segment se trouve à l'intérieur de l'obstacle. Cela se fait à l'aide de fonctions \textit{intersection} (fonction de classe \textit{segment}) et \textit{contains\_inside} (fonction de classe \textit{obstacle}). Un point subtil à clarifier est le cas d'un obstacle à auto-intersection. Dans ce cas, le segment contesté sera reconnu comme segment d'obstacle, et la vérification habituelle pour voir si ce segment se trouve à l'intérieur de cet obstacle peut donner un résultat ambigu, car le segment fait formellement partie de la frontière de l'obstacle. Puisqu'on doit exclure une telle situation, on introduit un contrôle supplémentaire en déplaçant le milieu du segment sur une petite distance \textit{eps} en direction de la normale externe (c'est-à-dire à l'intérieur de l'obstacle) et vérifie maintenant s'il se trouve à l'intérieur de l'obstacle. Ci-dessous
+    (figure~\eqref{fig:Self-intersection}) une illustration d'un tel cas. 
 	\begin{figure}[H]
 		\centering
 		\includegraphics[height=0.33\linewidth]{images/Self-intersection.pdf}
@@ -289,7 +291,7 @@
 	
 	Notre programme devrait être en mesure de recevoir et de traiter les données d'entrée dans un format qui lui convient, ainsi que les données de sortie dans un format convenant aux prochaines étapes du processus. Par « étape suivante » nous entendons le script Matlab, que nous utiliserons pour visualiser les résultats. Analysons les entrées et sorties du programme. Au début des travaux, il faut connaître les coordonnées du départ, de l'arrivée, ainsi que l'emplacement de tous les obstacles. À la fin il faut savoir la meme chose pour dessiner une carte, et de plus, il faut une liste de sommets du chemin optimal. La similitude des entrées et des sorties nous amène à l'idée de créer un format de fichier unique qui sera commodément traité dans Matlab pour dessiner des graphiques, et qui peut également être utilisé pour obtenir des données cartographiques.
 	
-	\subsection {Lecture de la carte}
+	\subsection {Lecture de la carte. \textit{Anastasiya Dulepova}} 
 	L'un des points clés de notre projet est la lecture des données et la construction d'une carte d'obstacles appropriée. Un élément fondamental est la procédure de «padding» dans le cas d'un disque, c'est-à-dire le lissage des coins des obstacles en utilisant un nombre suffisant de petits segments supplémentaires. La technique de cette procédure sera décrite plus en détail ci-dessous.
 	
 	Notre fonction \textit{parse\_map} est un analyseur complexe de données d'entrée enregistrées dans le fichier \textit{input.txt}. Cette fonction génère une liste d'obstacles à partir des données dans \textit{input.txt}, ainsi que le point de départ (\textit{start}) et le point d’arrivée (\textit{finish}), et dans le cas d'un disque met également en œuvre le soi-disant «padding» décrit ci-dessus. Tout d'abord, la fonction ‘parse’ les points de départ et d’arrivée, le rayon du disque (le cas d'un point est considéré comme le cas d'un disque avec un rayon nul), le nombre d'obstacles, puis les coordonnées des sommets des obstacles. Le processus d'analyse de segments est effectué à l'aide de la fonction lambda \textit{segment\_analyzer}. Nous utilisons le concept de fonction lambda à des fins d'encapsulation, améliorant ainsi la fiabilité du code. Dans le processus de traitement des données à l'intérieur de \textit{segment\_analyzer}, les principales étapes suivantes sont distinguées:
@@ -517,7 +519,7 @@
 	
 	Étant donné que l'opérateur virgule retourne le dernier élément de liste des arguments, decltype acceptera le type de structure « yes » si begin() et end() existent. Sinon, la première fonction test() ne participe pas à la surcharge, par conséquent, test ((T *) nullptr) renverra le type « no », dont la taille est strictement supérieure à la taille de « yes ». SFINAE et if consexpr sont les puissants outils de C ++ pour le branchement de code au moment de la compilation en l'absence de concepts attendus dans la norme de langage C++ 20.
 	
-	\section{Visualisation}
+	\section{Visualisation. \textit{Anastasiya Dulepova}}
 	On implémente la représentation graphique de la configuration des obstacles et de la trajectoire optimale trouvée en utilisant Octave. Le script \textbf{graphics.m} est fourni avec le fichier \textit{output.txt} généré à la suite de l'exécution du notre code C++ principal. Ce fichier a la structure suivante:
 	
 	\begin{figure}[H]
@@ -526,49 +528,54 @@
 		\caption{Structure de \textit{output.txt}}
 		\label{fig:output_structure}
 	\end{figure}
-	
-	Le script parse le fichier \textit{output.txt}, y trouvant dans l'ordre approprié les points de départ et d'arrivée, le rayon du disque (rappelons que le cas d'un point est considéré comme un cas particulier d'un disque de rayon nul), le nombre d'obstacles, puis pour chaque obstacle le nombre de ses sommets et leurs coordonnées, et enfin les coordonnées de la trajectoire optimale trouvée. La vérification de la présence de chacun des éléments ci-dessus, et ainsi la lecture ordonnée sont effectuées à l'aide du script \textbf{findSection.m}. En l'absence d’une section, un message d'erreur s'affiche dans Octave command window. A chaque étape de la lecture, l'élément graphique correspondant est tracé. Pour tracer des points et des segments, la fonction standard \textbf{plot} est utilisée. La fonction standard \textbf{fill} est utilisée pour dessiner des obstacles. Cette fonction dessine des polygones remplis, son avantage par rapport à la fonction \textbf{drawPolygon}, qui dessine un polygone sans remplissage, est qu'elle est incluse dans la bibliothèque standard de fonctions et ne nécessite pas l'installation et la connexion de packages supplémentaires (notamment le package \textbf{geometry}). Dans le script on calcule aussi les coordonnées maximales et minimales (\textit{min\_x\_coord, max\_x\_coord, min\_y\_coord, max\_y\_coord}) parmi les sommets des obstacles et les points de départ et d'arrivée. Ceci est utilisé (en tenant compte du rayon du disque) pour définir les limites (axis limits) du graphique final, afin qu'elles couvrent exactement l'espace nécessaire en fonction de l'emplacement des objets sur celui-ci et pour que le graphique soit ainsi plus lisible.
+	Le script parse le fichier \textit{output.txt}, y trouvant dans l'ordre approprié les points de départ et d'arrivée, le rayon du disque (rappelons que le cas d'un point est considéré comme un cas particulier d'un disque de rayon nul), le nombre d'obstacles, puis pour chaque obstacle le nombre de ses sommets et leurs coordonnées, et enfin les coordonnées de la trajectoire optimale trouvée. La vérification de la présence de chacun des éléments ci-dessus, et ainsi la lecture ordonnée sont effectuées à l'aide du script \textbf{findSection.m}. En l'absence d’une section, un message d'erreur s'affiche dans Octave command window. A chaque étape de la lecture, l'élément graphique correspondant est tracé. Pour tracer des points et des segments, la fonction standard \textbf{plot} est utilisée. La fonction standard \textbf{fill} est utilisée pour dessiner des obstacles. Cette fonction dessine des polygones remplis, son avantage par rapport à la fonction \textbf{drawPolygon}, qui dessine un polygone sans remplissage, est qu'elle est incluse dans la bibliothèque standard de fonctions et ne nécessite pas l'installation et la connexion de packages supplémentaires (notamment le package \textbf{geometry}). Dans le script on calcule aussi les coordonnées maximales et minimales (\textit{min\_x\_coord, max\_x\_coord, min\_y\_coord, max\_y\_coord}) parmi les sommets des obstacles et les points de départ et d'arrivée. Ceci est utilisé (en tenant compte du rayon du disque) pour définir les limites (axis limits) du graphique final, afin qu'elles couvrent exactement l'espace nécessaire en fonction de l'emplacement des objets sur celui-ci et pour que le graphique soit ainsi plus lisible. Ci-dessous un exemple de l'image résultante. 
+		\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\linewidth]{sample_image.png}
+	\caption{Trajectoire optimale. Visualisation dans Octave.}
+	\label{sample_image}
+	\end{figure}
 	
 	On a également utilisé une version réduite du script \textbf{graphics.m} pour dessiner notre graphe lors du débogage du programme principal. Cela a permis, notamment, de détecter l'absence de segments qui auraient dû être présents dans le graphe, et ainsi d'éliminer le problème de la fonction \textit{correct\_segment}, qui par erreur a rejeté quelques segments corrects.
-	
 	\section{Les tests}
 	\subsection{L'information commun}
-	Il est impossible de sous-estimer l'importance de "testing" le code Il y a plusieurs raisons de le faire. 
+	Il est impossible de sous-estimer l'importance de "testing" le code. Il y a plusieurs raisons de le faire. 
 	\begin{enumerate}
-		\item{Il faut toujours vérifier que les fonctions marcheront bien et font exactement ce qu'on voulait. }
-		\item {Les tests aident de trouver une erreur au plus tôt possible et d'éviter le temps supplémentaire de le localiser.}
+		\item{Il faut toujours vérifier que les fonctions marchent bien et font exactement ce qu'on veut. }
+		\item {Les tests aident de trouver une erreur au plus tôt possible et d'éviter le temps supplémentaire de la localiser.}
 		\item{Les test servent de documentation au projet, nous permettent de décrire ce que nous attendons de l'exécution de certaines fonctions.}
 	\end{enumerate} 
-	Pour tester le code on a utilisé le "GoogleTest Framework", qui est courant pour les programmes en C++ pour les plateformes différents (Windows, linux, macOS etc). On a ajouté la libraire "googletest" pour éviter les avertissements pendant la compilation. Pour activer le "gtest" dans le projet il faut écrire quelques lignes dans le "CMakeLists.txt" (fig.\ref{gtest})
+	Pour tester le code on a utilisé le "GoogleTest Framework", qui est courant pour les programmes en C++ pour les plateformes différents (Windows, linux, macOS etc). On a ajouté la librairie "googletest" pour éviter les avertissements pendant la compilation. Pour activer le "gtest" dans le projet il faut écrire quelques lignes dans le "CMakeLists.txt" (fig.\ref{gtest})
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.8\linewidth]{gtest.png}
 		\caption{Connexion d'un Framework dans un projet}
 		\label{gtest}
 	\end{figure}
+
 	
 	Mais pour lancer les tests il faut assembler une bibliothèque statique "gtest.a".
 	
-	On a fait trois types de tests: unit-tests pour s'assurer l'exécution correctes des certaines fonctions et l'instanciation de classes; intégration tests et tests de l'acceptation pour tester le résultat de la programme entière. Pour chaque test on obtiens soit une notification de succès, comme dans fig.\ref{success} ou la précision la ligne avec le mal réponse.
+	On a fait trois types de tests: unit-tests pour s'assurer l'exécution correcte des certaines fonctions et l'instanciation de classes; tests d'intégration et tests d'acceptation pour tester le résultat de la programme entière. Pour chaque test on obtiens soit une notification de succès, comme dans fig.\ref{success} ou la précision de la ligne avec la mauvaise réponse.
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.8\linewidth]{success}
 		\caption{Passage réussie des tests}
 		\label{success}
 	\end{figure}
-	Pour la classe "sommet" on a testé les résultats de constructeur en utilisant le "test fixture", qui est la classe héritée de \cal{testing::Test} contenant tous les variables et foncions à tester. En plus, il y a les test pour tous les opérateurs arithmétiques définies par l'utilisateur.
+	Pour la classe "sommet" on a testé les résultats de constructeur en utilisant le "test fixture", qui est la classe héritée de \cal{testing::Test} contenant tous les variables et fonctions à tester. En plus, il y a le test pour tous les opérateurs arithmétiques définies par l'utilisateur.
 	
-	Pour la classe "segment" on a aussi écrit le test pour le constructeur (un utilisant "fixture") et pour la fonction "intersection", qui détermine si deux segments se croisent ou non. La fig. \ref{fig:intersection} montre tous les cas possibles, et le comportement de la fonction que on attendre.
+	Pour la classe "segment" on a aussi écrit le test pour le constructeur (un utilisant "fixture") et pour la fonction "intersection", qui détermine si deux segments se croisent ou non. La fig. \ref{fig:intersection} montre tous les cas possibles, et le comportement de la fonction qu'on attendre.
 	\begin{figure}[H]
 		\centering
 		\includegraphics[height=0.5\linewidth]{intersect}
 		\caption{Les réponses prévus pour la fonction "intersection"}
 		\label{fig:intersection}
 	\end{figure}
-	Dans le code tous les tests sont passé bien. On a aussi examiné le cas, quand un de segments dégénère en un point. Le résultat est fausse, comme prévu.
+	Dans le code tous les tests se sont bien passés. On a aussi examiné le cas, quand un de segments dégénère en un point. Le résultat est faux, comme prévu.
 	
 	
-	Pour la classe "obstacle" il était plus important de tester la fonction "$contains\_inside$", qui joue la rôle principale dans le projet. Dans la fig. \ref{inside} il y a 3 situations principales: le point est hors la figure, le point est dans la figure et le point est à la frontière. Les réponses prévus sont dans le tableaux. 
+	Pour la classe "obstacle" il était plus important de tester la fonction "$contains\_inside$", qui joue la rôle principale dans le projet. Dans la fig. \ref{inside} il y a 3 situations principales: le point est en dehors de la figure, le point est dans la figure et le point est à la frontière. Les réponses prévues sont dans le tableaux. 
 	\begin{figure}[H]
 		\centering
 		\includegraphics[height=0.5\linewidth]{inside}
@@ -576,8 +583,8 @@
 		\label{inside}
 	\end{figure}
 	\subsection{Tests d'intégration}
-	Tests d'intégration sont les tests intermédiaires, fait pour vérifier que certains modules de programme marchent bien ensemble.
-	Par exemple, par visualisation de figure \ref{integration} on a montré que l'algorithme offrir les schémas correctes et admissibles. Donc, le but final est juste de choisir l'optimal.
+	Tests d'intégration sont les tests intermédiaires, faits pour vérifier que certains modules de programme marchent bien ensemble.
+	Par exemple, par visualisation de figure \ref{integration} on a montré que l'algorithme offre les schémas correctes et admissibles. Donc, le but final est juste de choisir l'optimal.
 		\begin{figure}[H]
 		\centering
 		\includegraphics[height=0.5\linewidth]{acceptance}

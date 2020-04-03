@@ -20,7 +20,7 @@ min_y_coord = y_start;
 if (radius == 0.)
 plot (x_start,y_start, "marker", "o", "markersize", 5 , "markerfacecolor", "cyan");
 else
-plot (x_start,y_start, "marker", "o", "markersize", radius*72, "markerfacecolor", "cyan");
+plot (x_start,y_start, "marker", "o", "markersize", round(radius*72), "markerfacecolor", "cyan");
 end
 
 %reading finish point
@@ -71,8 +71,8 @@ for i = 1:n_obstacles
   if (max_y_obstacle>max_y_coord)
     max_y_coord = max_y_obstacle;
   end
-  if (min_x_obstacle<min_y_coord)
-    min_y_coord = min_x_obstacle;
+  if (min_y_obstacle<min_y_coord)
+    min_y_coord = min_y_obstacle;
   end
   %drawing filled obstacle
   hold on 
@@ -86,4 +86,5 @@ status_output = findSection(fileID, "[$OptPath]");
 if (status_output == 0)
   pathCoord = (fscanf(fileID, "%f %f", [2, Inf]))';
   plot(pathCoord(:,1), pathCoord(:,2));
+  title("Trajectoire optimale");
 endif
